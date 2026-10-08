@@ -1786,7 +1786,7 @@
     var note = document.createElement('div');
     note.className = 'attention-banner';
     note.style.cssText = 'background:var(--warning-soft);border-color:var(--warning);color:var(--text);';
-    note.textContent = 'You’re viewing this board outside Claude, so changes aren’t saved. Publish it as a Claude artifact to use it, or use Backup → Export to keep your work.';
+    note.textContent = 'You’re using this board in local mode. Saving relies on your browser cookies, cleaning them will clean your data.  Use Backup → Export frequently to keep your work safe.';
     var appEl = document.getElementById('app');
     appEl.insertBefore(note, appEl.firstChild);
   }
