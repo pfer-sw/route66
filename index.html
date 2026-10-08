@@ -1,0 +1,1811 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body><title>Route 66</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&amp;family=Karla:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
+<style>
+  :root{
+    --bg:#F7F8FA; --surface:#FFFFFF; --surface-2:#F1F3F6; --surface-3:#E3E6EB;
+    --border:#E3E6EB; --text:#22262E; --text-muted:#5C6472; --text-faint:#8891A0;
+    --accent:#4C6FA8; --accent-strong:#38517D; --accent-soft:#EAF0FA;
+    --good:#2E8B6F; --good-soft:#E3F1EC;
+    --warning:#A8792E; --warning-soft:#F5EEDC;
+    --critical:#B23A22; --critical-soft:#FBEBE7;
+    --shadow:0 1px 2px rgba(34,38,46,.04), 0 6px 16px -10px rgba(34,38,46,.10);
+    --radius:10px; --radius-sm:7px;
+    --font-display:'Sora', system-ui, sans-serif;
+    --font-body:'Karla', system-ui, sans-serif;
+    --font-mono:'Space Mono', ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#12151A; --surface:#1A1E24; --surface-2:#20252C; --surface-3:#262C34;
+      --border:#2C323C; --text:#E8EAED; --text-muted:#97A0AD; --text-faint:#6B7480;
+      --accent:#7B9FD9; --accent-strong:#A9C3EA; --accent-soft:rgba(123,159,217,.16);
+      --good:#5FBE95; --good-soft:rgba(95,190,149,.14);
+      --warning:#E0B15B; --warning-soft:rgba(224,177,91,.14);
+      --critical:#E2836D; --critical-soft:rgba(226,131,109,.14);
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 24px -14px rgba(0,0,0,.5);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#12151A; --surface:#1A1E24; --surface-2:#20252C; --surface-3:#262C34;
+    --border:#2C323C; --text:#E8EAED; --text-muted:#97A0AD; --text-faint:#6B7480;
+    --accent:#7B9FD9; --accent-strong:#A9C3EA; --accent-soft:rgba(123,159,217,.16);
+    --good:#5FBE95; --good-soft:rgba(95,190,149,.14);
+    --warning:#E0B15B; --warning-soft:rgba(224,177,91,.14);
+    --critical:#E2836D; --critical-soft:rgba(226,131,109,.14);
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 24px -14px rgba(0,0,0,.5);
+  }
+  *{box-sizing:border-box;}
+  [hidden]{ display:none !important; }
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--font-body); font-size:15px; line-height:1.5;
+    overflow-x:hidden;
+  }
+  h1,h2,h3{ font-family:var(--font-display); margin:0; text-wrap:balance; }
+  a{ color:var(--accent); }
+  .muted{ color:var(--text-muted); }
+  button{ font-family:inherit; }
+  input,select,textarea{ font-family:inherit; font-size:14px; color:var(--text); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px 10px; }
+  input:focus,select:focus,textarea:focus,button:focus-visible{ outline:2px solid var(--accent); outline-offset:1px; }
+  #task-form label{ display:flex; flex-direction:column; gap:5px; font-size:12.5px; color:var(--text-muted); font-weight:600; letter-spacing:.02em; text-transform:uppercase; }
+
+  .app{ max-width:1120px; margin:0 auto; padding:28px 24px 80px; }
+
+  .topbar{ display:flex; align-items:flex-start; justify-content:space-between; gap:20px; flex-wrap:wrap; margin-bottom:22px; }
+  .brand{ display:flex; align-items:center; gap:9px; margin-bottom:14px; }
+  .brand-icon{ color:var(--accent); flex-shrink:0; }
+  .brand-name{ font-family:var(--font-display); font-weight:800; font-size:15px; letter-spacing:.03em; text-transform:uppercase; color:var(--text-muted); }
+  .greeting h1{ font-size:26px; font-weight:800; cursor:pointer; border-bottom:1px dashed transparent; }
+  .greeting h1:hover{ border-bottom-color:var(--text-faint); }
+  .greeting-name-input{ font-family:var(--font-display); font-size:26px; font-weight:800; color:var(--text); background:var(--surface); border:1px dashed var(--border); border-radius:8px; padding:0 8px; width:220px; }
+  .greeting p{ margin:4px 0 0; font-size:13.5px; }
+  .top-actions{ display:flex; gap:10px; align-items:flex-start; }
+
+  .btn{ border:1px solid var(--border); background:var(--surface); color:var(--text); border-radius:999px; padding:10px 16px; font-weight:600; font-size:13.5px; cursor:pointer; transition:background .15s ease, border-color .15s ease; white-space:nowrap; }
+  .btn:hover{ border-color:var(--accent); }
+  .btn:disabled{ opacity:.5; cursor:default; }
+  .btn-primary{ background:var(--accent); border-color:var(--accent); color:#fff; }
+  .btn-primary:hover{ background:var(--accent-strong); border-color:var(--accent-strong); }
+  .btn-ghost{ background:transparent; }
+  .btn-sm{ padding:7px 12px; font-size:12.5px; }
+
+  .stats{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:16px; }
+  .stat-tile{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; display:flex; flex-direction:column; gap:2px; }
+  .stat-value{ font-family:var(--font-mono); font-size:24px; font-weight:600; font-variant-numeric:tabular-nums; }
+  .stat-label{ font-size:12px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.04em; font-weight:600; }
+  .stat-tile.stat-warning .stat-value{ color:var(--critical); }
+
+  .attention-banner{ background:var(--critical-soft); border:1px solid var(--critical); color:var(--critical); border-radius:var(--radius-sm); padding:10px 14px; font-size:13.5px; margin-bottom:16px; }
+  .attention-banner a{ color:var(--critical); text-decoration:underline; margin-right:4px; }
+
+  .roadmap{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px; margin-bottom:16px; }
+  .roadmap-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:10px; }
+  .roadmap-head h2{ font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
+  .roadmap-nav{ display:flex; gap:2px; }
+  .roadmap-track{ display:flex; gap:8px; overflow-x:auto; scroll-snap-type:x proximity; padding-bottom:2px; scrollbar-width:thin; }
+  .roadmap-day{ flex:0 0 106px; scroll-snap-align:start; background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:8px; display:flex; flex-direction:column; gap:5px; min-height:92px; }
+  .roadmap-day.is-today{ border-color:var(--accent); background:var(--accent-soft); }
+  .roadmap-day-label{ font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:.02em; }
+  .roadmap-day.is-today .roadmap-day-label{ color:var(--accent-strong); }
+  .roadmap-day-date{ font-family:var(--font-mono); font-size:10.5px; color:var(--text-faint); font-variant-numeric:tabular-nums; }
+  .roadmap-chip{ display:block; width:100%; background:var(--surface); border:1px solid var(--border); border-radius:6px; padding:3px 6px; font-size:11px; text-align:left; cursor:pointer; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:var(--text); }
+  .roadmap-chip:hover{ border-color:var(--accent); color:var(--accent); }
+  .roadmap-chip.state-critical{ border-color:var(--critical); color:var(--critical); }
+  .roadmap-chip.state-warning{ border-color:var(--warning); color:var(--warning); }
+  .roadmap-chip.is-due{ font-weight:700; background:var(--surface); box-shadow:inset 0 0 0 1px currentColor; }
+  .roadmap-more{ font-size:10.5px; color:var(--text-faint); }
+  .roadmap-empty{ font-size:11px; color:var(--text-faint); }
+
+  .filters{ display:flex; gap:8px; margin-bottom:18px; flex-wrap:wrap; }
+  .chip{ border:1px solid var(--border); background:var(--surface); color:var(--text-muted); border-radius:999px; padding:6px 14px; font-size:12.5px; font-weight:600; cursor:pointer; }
+  .chip.active{ background:var(--accent-soft); border-color:var(--accent); color:var(--accent-strong); }
+  .chip.sm{ padding:4px 10px; font-size:11.5px; }
+
+  .layout{ display:grid; grid-template-columns:1fr 320px; gap:22px; align-items:start; }
+  @media (max-width:860px){ .layout{ grid-template-columns:1fr; } .stats{ grid-template-columns:repeat(2,1fr); } }
+
+  .col-main{ display:flex; flex-direction:column; gap:20px; min-width:0; }
+  .priority-group-head{ display:flex; align-items:baseline; gap:8px; margin-bottom:10px; }
+  .priority-group-head h2{ font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
+  .priority-group{ margin-bottom:4px; }
+  .empty-hint{ color:var(--text-faint); font-size:13px; padding:10px 2px; }
+  .empty-state{ background:var(--surface); border:1px dashed var(--border); border-radius:var(--radius); padding:22px; text-align:center; margin-bottom:18px; }
+  .empty-state p{ margin:4px 0; }
+
+  .task-card{ display:flex; gap:14px; background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px; margin-bottom:10px; box-shadow:var(--shadow); }
+  .task-card.is-critical{ border-color:var(--critical); }
+  .task-card.is-warning{ border-color:var(--warning); }
+  .task-card.is-done{ opacity:.6; }
+  .task-card.flash{ border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+  @media (prefers-reduced-motion: no-preference){ .task-card{ transition:box-shadow .3s ease, border-color .3s ease; } }
+  .ring-btn{ background:none; border:none; padding:0; cursor:pointer; flex-shrink:0; border-radius:50%; }
+  .ring-track{ stroke:var(--border); }
+  .ring-progress{ stroke:var(--accent); stroke-linecap:round; }
+  .ring-done{ stroke:var(--good); stroke-linecap:round; }
+  @media (prefers-reduced-motion: no-preference){ .ring-progress, .ring-done{ transition:stroke-dashoffset .35s ease; } }
+  .ring-label{ font-family:var(--font-mono); font-size:10.5px; fill:var(--text); }
+  .task-main{ flex:1; min-width:0; }
+  .task-top{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; }
+  .task-title{ font-size:15px; font-weight:700; }
+  .task-card.is-done .task-title{ text-decoration:line-through; }
+  .task-icons{ display:flex; gap:4px; flex-shrink:0; }
+  .icon-btn{ background:none; border:none; color:var(--text-faint); cursor:pointer; font-size:14px; padding:4px; border-radius:6px; line-height:1; }
+  .theme-toggle{ display:flex; align-items:center; justify-content:center; width:34px; height:34px; border:1px solid var(--border); border-radius:var(--radius-sm); background:var(--surface); color:var(--text-muted); }
+  .theme-toggle:hover{ color:var(--text); border-color:var(--text-faint); }
+  .icon-btn:hover{ color:var(--text); background:var(--surface-2); }
+  .icon-btn.sm{ font-size:12px; }
+  .icon-btn.complete-btn:hover{ color:var(--good); background:var(--good-soft); }
+  .task-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; margin-top:6px; font-size:12.5px; }
+  .priority-marker{ color:var(--text-muted); font-weight:600; }
+  .source-badge{ background:var(--surface-2); color:var(--text-muted); border-radius:6px; padding:2px 8px; font-size:11.5px; font-weight:600; text-decoration:none; }
+  a.source-badge:hover{ color:var(--accent); }
+  .deadline-chip{ font-family:var(--font-mono); font-weight:600; padding:2px 9px; border-radius:6px; font-size:12px; }
+  .deadline-chip.state-ok{ background:var(--good-soft); color:var(--good); }
+  .deadline-chip.state-warning{ background:var(--warning-soft); color:var(--warning); }
+  .deadline-chip.state-critical{ background:var(--critical-soft); color:var(--critical); }
+  .deadline-chip.state-none{ background:var(--surface-2); color:var(--text-faint); }
+  .deadline-chip.state-done{ background:var(--surface-2); color:var(--text-faint); }
+
+  .subtasks{ margin-top:10px; }
+  .link-btn{ background:none; border:none; color:var(--accent); font-size:12.5px; font-weight:600; cursor:pointer; padding:0; }
+  .link-btn.warn{ color:var(--critical); }
+  .subtask-list{ list-style:none; margin:8px 0 0; padding:0; display:flex; flex-direction:column; gap:5px; }
+  .subtask-list li{ display:flex; align-items:center; justify-content:space-between; gap:6px; }
+  .subtask-item{ display:flex; align-items:center; gap:8px; font-size:13.5px; cursor:pointer; }
+  .subtask-item input{ padding:0; width:15px; height:15px; accent-color:var(--accent); }
+  .subtask-item.done span{ text-decoration:line-through; color:var(--text-faint); }
+  .inline-add-subtask{ margin-top:8px; }
+  .inline-subtask-input{ width:100%; font-size:13px; background:var(--surface-2); border:1px dashed var(--border); }
+  .inline-subtask-input::placeholder{ color:var(--text-faint); }
+
+  .task-notes{ margin-top:10px; position:relative; }
+  .notes-icon{ position:absolute; left:10px; top:9px; color:var(--text-faint); pointer-events:none; }
+  .notes-input{ width:100%; min-height:34px; resize:none; font-size:13px; line-height:1.4; background:var(--surface); border:1px solid var(--border); padding-left:30px; }
+  .notes-input::placeholder{ color:var(--text-faint); }
+  .notes-input:focus{ background:var(--surface); }
+
+  .upcoming-panel{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:16px; }
+  .upcoming-panel summary{ cursor:pointer; font-weight:700; font-size:13.5px; color:var(--text-muted); }
+  .upcoming-panel[open] summary{ margin-bottom:10px; }
+  .upcoming-items{ display:flex; flex-direction:column; }
+  .starts-badge{ font-family:var(--font-mono); font-weight:600; padding:2px 9px; border-radius:6px; font-size:12px; background:var(--accent-soft); color:var(--accent-strong); white-space:nowrap; }
+
+  .completed-panel{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; }
+  .completed-panel summary{ cursor:pointer; font-weight:700; font-size:13.5px; color:var(--text-muted); }
+  .completed-items{ list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:8px; }
+  .completed-items li{ font-size:13.5px; }
+  .completed-row{ display:flex; align-items:center; gap:8px; }
+  .completed-title{ flex:1; text-decoration:line-through; color:var(--text-faint); }
+  .closed-date{ font-size:11.5px; color:var(--text-faint); white-space:nowrap; }
+  .completed-expand-btn svg{ transition:transform .15s; }
+  .completed-expand-btn.is-expanded svg{ transform:rotate(180deg); }
+  .completed-expand-spacer{ width:22px; flex-shrink:0; }
+  .completed-detail{ margin:8px 0 2px 30px; padding-left:10px; border-left:2px solid var(--border); display:flex; flex-direction:column; gap:10px; }
+  .completed-detail .subtask-list{ margin:0; }
+  .completed-detail .subtask-item{ cursor:default; }
+  .completed-detail .subtask-item input{ pointer-events:none; }
+  .completed-notes{ display:flex; gap:8px; align-items:flex-start; font-size:13px; color:var(--text-muted); line-height:1.45; }
+  .completed-notes .notes-icon{ color:var(--text-faint); margin-top:2px; flex-shrink:0; }
+  .completed-notes p{ margin:0; white-space:pre-wrap; }
+
+  .panel{ background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px; position:sticky; top:20px; }
+  .panel-head{ display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px; }
+  .panel-head h2{ font-size:14px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-muted); }
+  .panel-head span{ font-size:12px; }
+  .panel-head-right{ display:flex; align-items:baseline; gap:10px; }
+  .inbox-search{ display:flex; gap:6px; margin-bottom:10px; }
+  .inbox-search input{ flex:1; min-width:0; }
+  #inbox-search-results:not(:empty){ margin-bottom:10px; border-bottom:1px solid var(--border); padding-bottom:10px; }
+  .search-result{ display:flex; align-items:flex-start; justify-content:space-between; gap:8px; padding:6px 0; font-size:13px; }
+  .search-result a{ font-weight:600; text-decoration:none; }
+  .search-result a:hover{ text-decoration:underline; }
+  .sr-highlight{ font-size:11.5px; margin:2px 0 0; }
+  .inbox-item{ display:flex; align-items:center; justify-content:space-between; gap:8px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .inbox-item:last-child{ border-bottom:none; }
+  .inbox-main{ display:flex; align-items:center; gap:8px; min-width:0; }
+  .inbox-main a{ font-size:13px; font-weight:600; text-decoration:none; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .inbox-main a:hover{ text-decoration:underline; }
+  .inbox-icon{ width:16px; height:16px; border-radius:4px; flex-shrink:0; }
+  .inbox-icon-glyph{ flex-shrink:0; }
+  .inbox-actions{ display:flex; align-items:center; gap:2px; flex-shrink:0; }
+  .manual-inbox-form{ display:flex; flex-direction:column; gap:6px; margin-top:10px; padding-top:10px; border-top:1px dashed var(--border); }
+  .manual-inbox-form input{ font-size:13px; }
+
+  .modal-overlay{ position:fixed; inset:0; background:rgba(20,18,14,.45); display:flex; align-items:center; justify-content:center; padding:20px; z-index:50; }
+  .modal{ background:var(--surface); border-radius:var(--radius); border:1px solid var(--border); width:100%; max-width:440px; max-height:88vh; overflow-y:auto; padding:22px; box-shadow:var(--shadow); }
+  .modal-head{ display:flex; align-items:center; justify-content:space-between; margin-bottom:16px; }
+  .modal-head h2{ font-size:18px; }
+  #task-form{ display:flex; flex-direction:column; gap:14px; }
+  .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+  .form-row.form-row-single{ grid-template-columns:1fr; }
+  .subtask-row{ display:flex; gap:6px; margin-bottom:6px; }
+  .subtask-row input{ flex:1; }
+  .modal-actions{ display:flex; justify-content:space-between; align-items:center; margin-top:4px; }
+  .lastday-items{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px; }
+  .lastday-items li{ display:flex; align-items:center; justify-content:space-between; gap:10px; }
+  .lastday-link{ font-weight:700; text-decoration:none; color:var(--text); }
+  .lastday-link:hover{ text-decoration:underline; color:var(--accent); }
+  .close-warning-list{ list-style:disc; margin:0; padding:0 0 0 18px; display:flex; flex-direction:column; gap:6px; font-size:13.5px; }
+  .drafts-hint{ font-size:12px; color:var(--text-faint); margin:0 0 8px; }
+  .reschedule-presets{ display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:14px; }
+  .reschedule-custom{ display:flex; gap:8px; margin-bottom:12px; }
+  .reschedule-custom input{ flex:1; min-width:0; }
+  .reschedule-clear{ width:100%; text-align:center; color:var(--text-faint); }
+
+  .toast-stack{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); display:flex; flex-direction:column; gap:8px; z-index:60; }
+  .toast{ background:var(--text); color:var(--bg); padding:10px 16px; border-radius:999px; font-size:13px; font-weight:600; box-shadow:var(--shadow); }
+  .toast-warn{ background:var(--critical); color:#fff; }
+
+  /* Brief interaction guard: shown for a moment after a click that can
+     reorder or remove cards (completing a task, deleting a subtask, …) so
+     a fast follow-up click lands on this scrim instead of a shifted
+     element underneath — the fix for "ticking too fast un-ticks things". */
+  .action-lock{ position:fixed; inset:0; z-index:70; display:flex; align-items:flex-end; justify-content:center; padding-bottom:28px; opacity:0; pointer-events:none; transition:opacity .12s ease; }
+  .action-lock.is-active{ opacity:1; pointer-events:auto; }
+  .action-lock-pill{ display:flex; align-items:center; gap:8px; background:var(--text); color:var(--bg); padding:9px 16px; border-radius:999px; font-size:13px; font-weight:600; box-shadow:var(--shadow); }
+  .action-lock-spinner{ width:13px; height:13px; border-radius:50%; border:2px solid rgba(255,255,255,.35); border-top-color:var(--bg); animation:action-lock-spin .6s linear infinite; }
+  @keyframes action-lock-spin{ to{ transform:rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce){ .action-lock-spinner{ animation-duration:1.4s; } }
+
+  /* Saving modal: every save republishes the board and reloads this view,
+     which takes a few seconds. Grey the page out and block input for the
+     whole round trip so nothing is clicked into a view that's about to be
+     replaced. */
+  .saving-overlay{ position:fixed; inset:0; z-index:90; display:flex; align-items:center; justify-content:center; padding:20px; background:rgba(18,21,26,.52); opacity:0; transition:opacity .16s ease; cursor:progress; }
+  @supports (backdrop-filter: blur(2px)){ .saving-overlay{ backdrop-filter:grayscale(.6) blur(1.5px); -webkit-backdrop-filter:grayscale(.6) blur(1.5px); } }
+  .saving-overlay.is-visible{ opacity:1; }
+  .saving-card{ background:var(--surface); color:var(--text); border:1px solid var(--border); border-radius:var(--radius); box-shadow:0 18px 48px -18px rgba(0,0,0,.45); padding:22px 26px; display:flex; align-items:center; gap:16px; max-width:340px; width:100%; }
+  .saving-spinner{ width:28px; height:28px; flex-shrink:0; border-radius:50%; border:3px solid var(--surface-3); border-top-color:var(--accent); animation:action-lock-spin .7s linear infinite; }
+  .saving-title{ font-family:var(--font-display); font-weight:700; font-size:15px; margin:0; }
+  .saving-sub{ margin:2px 0 0; font-size:12.5px; color:var(--text-muted); }
+  @media (prefers-reduced-motion: reduce){ .saving-overlay{ transition:none; } .saving-spinner{ animation-duration:1.6s; } }
+
+  .backup-section{ display:flex; flex-direction:column; gap:8px; padding:14px 0; border-top:1px solid var(--border); }
+  .backup-section:first-of-type{ border-top:none; padding-top:0; }
+  .backup-section h3{ font-size:13.5px; }
+  .backup-section p{ margin:0; font-size:13px; color:var(--text-muted); }
+  .backup-row{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .backup-file-label{ position:relative; overflow:hidden; }
+  .backup-file-label input{ position:absolute; inset:0; opacity:0; cursor:pointer; }
+  .backup-paste{ width:100%; min-height:84px; resize:vertical; font-family:var(--font-mono); font-size:11.5px; }
+  .backup-preview{ background:var(--surface-2); border:1px solid var(--border); border-radius:var(--radius-sm); padding:10px 12px; font-size:13px; display:flex; flex-direction:column; gap:8px; }
+  .backup-preview strong{ font-variant-numeric:tabular-nums; }
+  .backup-preview.is-error{ background:var(--critical-soft); border-color:var(--critical); color:var(--critical); }
+  .backup-warning{ color:var(--critical); font-weight:600; font-size:12.5px; }
+  .btn-danger{ background:var(--critical); border-color:var(--critical); color:#fff; }
+  .btn-danger:hover{ filter:brightness(.92); border-color:var(--critical); }
+
+  .read-only [data-action]:not([data-action="filter"]){ pointer-events:none; opacity:.5; }
+
+  ::selection{ background:var(--accent-soft); }
+</style>
+
+<div class="app" id="app">
+  <div class="topbar">
+    <div>
+      <div class="brand">
+        <svg class="brand-icon" width="24" height="24" viewBox="0 0 26 26" fill="none" aria-hidden="true">
+          <path d="M13 2.4 L22.6 5.6 V13 C22.6 18.6 18.5 22.1 13 23.6 C7.5 22.1 3.4 18.6 3.4 13 V5.6 Z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"></path>
+          <path d="M13 6.2 L13 20" stroke="currentColor" stroke-width="2" stroke-dasharray="2.4 3" stroke-linecap="round"></path>
+        </svg>
+        <span class="brand-name">Route 66</span>
+      </div>
+      <div class="greeting">
+        <h1 id="greeting-text" data-action="edit-name" title="Click to set your name">Good morning</h1>
+        <input type="text" id="greeting-name-input" class="greeting-name-input" placeholder="Your name" maxlength="40" hidden="">
+        <p id="date-text" class="muted"></p>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button type="button" class="icon-btn theme-toggle" id="btn-theme-toggle" data-action="toggle-theme" aria-label="Theme"></button>
+      <button class="btn btn-ghost" data-action="open-backup">Backup</button>
+      <button class="btn btn-primary" data-action="open-add-modal">+ Add task</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="roadmap">
+    <div class="roadmap-head">
+      <h2>Roadmap</h2>
+      <div class="roadmap-nav">
+        <button type="button" class="icon-btn" data-action="roadmap-scroll" data-dir="-1" aria-label="Scroll to earlier days">‹</button>
+        <button type="button" class="icon-btn" data-action="roadmap-scroll" data-dir="1" aria-label="Scroll to later days">›</button>
+      </div>
+    </div>
+    <div class="roadmap-track" id="roadmap-track"></div>
+  </div>
+
+  <div class="attention-banner" id="attention-banner" hidden=""></div>
+
+  <div class="filters" id="filters">
+    <button class="chip active" data-action="filter" data-filter="all">All</button>
+    <button class="chip" data-action="filter" data-filter="high">High</button>
+    <button class="chip" data-action="filter" data-filter="medium">Medium</button>
+    <button class="chip" data-action="filter" data-filter="low">Low</button>
+  </div>
+
+  <div class="layout">
+    <section class="col-main">
+      <div id="today-list"></div>
+      <div id="upcoming-list"></div>
+      <div id="completed-list"></div>
+    </section>
+    <aside class="col-side">
+      <div class="panel" id="drafts-panel" hidden="">
+        <div class="panel-head">
+          <h2>Drafts</h2>
+          <span class="muted" id="drafts-count"></span>
+        </div>
+        <p class="drafts-hint">Saved automatically when a new task is closed before you hit Save.</p>
+        <div id="drafts-list"></div>
+      </div>
+      <div class="panel">
+        <div class="panel-head">
+          <h2>Inbox</h2>
+          <div class="panel-head-right">
+            <span class="muted" id="inbox-count"></span>
+            <button type="button" class="link-btn" id="btn-clear-inbox" data-action="clear-inbox" hidden="">Clear</button>
+          </div>
+        </div>
+        <div class="inbox-search">
+          <input type="text" id="inbox-search-input" placeholder="Search Slack…">
+          <button class="btn btn-ghost btn-sm" data-action="search-slack">Search</button>
+        </div>
+        <div id="inbox-search-results"></div>
+        <div id="inbox-list"></div>
+        <button class="btn btn-ghost btn-sm" data-action="open-manual-inbox" style="margin-top:10px;">+ Add link manually</button>
+        <div class="manual-inbox-form" id="manual-inbox-form" hidden="">
+          <input type="text" id="mi-title" placeholder="Title">
+          <input type="url" id="mi-url" placeholder="Link (optional)">
+          <button class="btn btn-primary btn-sm" data-action="submit-manual-inbox">Add to inbox</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay" hidden="">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <div class="modal-head">
+      <h2 id="modal-title">Add task</h2>
+      <button class="icon-btn" data-action="close-modal" aria-label="Close">✕</button>
+    </div>
+    <form id="task-form">
+      <input type="hidden" id="f-id">
+      <input type="hidden" id="f-inbox-source-id">
+      <label>Title
+        <input type="text" id="f-title" required="" maxlength="140" placeholder="What needs to happen?">
+      </label>
+      <div class="form-row">
+        <label>Priority
+          <select id="f-priority">
+            <option value="high">High</option>
+            <option value="medium" selected="">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </label>
+        <label>Deadline
+          <input type="datetime-local" id="f-deadline">
+        </label>
+      </div>
+      <div class="form-row">
+        <label>Start date (optional)
+          <input type="date" id="f-start-date">
+        </label>
+        <label>Source
+          <select id="f-source-type">
+            <option value="manual">Manual</option>
+            <option value="slack">Slack</option>
+          </select>
+        </label>
+      </div>
+      <div class="form-row form-row-single">
+        <label>Link (optional)
+          <input type="url" id="f-source-url" placeholder="https://…">
+        </label>
+      </div>
+      <div id="f-subtasks-wrap">
+        <label>Subtasks (optional)</label>
+        <div id="f-subtasks-list"></div>
+        <button type="button" class="btn btn-ghost btn-sm" data-action="add-subtask-row">+ Add subtask</button>
+      </div>
+      <label>Notes (optional)
+        <textarea id="f-notes" rows="2" placeholder="Context, links, anything worth remembering"></textarea>
+      </label>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-ghost" id="btn-delete-task" data-action="delete-task-from-modal" hidden="">Delete task</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<div class="modal-overlay" id="reschedule-overlay" hidden="">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="reschedule-title" style="max-width:360px;">
+    <div class="modal-head">
+      <h2 id="reschedule-title">Reschedule</h2>
+      <button class="icon-btn" data-action="close-reschedule" aria-label="Close">✕</button>
+    </div>
+    <div class="reschedule-presets">
+      <button type="button" class="btn btn-ghost btn-sm" data-action="reschedule-preset" data-preset="today">Today, 6pm</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-action="reschedule-preset" data-preset="tomorrow">Tomorrow, 9am</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-action="reschedule-preset" data-preset="3days">In 3 days</button>
+      <button type="button" class="btn btn-ghost btn-sm" data-action="reschedule-preset" data-preset="1week">In 1 week</button>
+    </div>
+    <div class="reschedule-custom">
+      <input type="datetime-local" id="reschedule-input">
+      <button type="button" class="btn btn-primary btn-sm" data-action="reschedule-set">Set</button>
+    </div>
+    <button type="button" class="btn btn-ghost btn-sm reschedule-clear" data-action="reschedule-preset" data-preset="clear">Clear deadline</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="lastday-overlay" hidden="">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="lastday-title" style="max-width:400px;">
+    <div class="modal-head">
+      <h2 id="lastday-title">⏰ Due today</h2>
+      <button class="icon-btn" data-action="close-lastday" aria-label="Close">✕</button>
+    </div>
+    <p class="muted" style="margin:0 0 14px;font-size:13px;">These tasks are on their last day.</p>
+    <div id="lastday-list"></div>
+    <div class="modal-actions" style="justify-content:flex-end;margin-top:16px;">
+      <button type="button" class="btn btn-primary" data-action="close-lastday">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="close-warning-overlay" hidden="">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="close-warning-title" style="max-width:400px;">
+    <div class="modal-head">
+      <h2 id="close-warning-title">Not finished yet</h2>
+      <button class="icon-btn" data-action="close-close-warning" aria-label="Close">✕</button>
+    </div>
+    <p class="muted" style="margin:0 0 10px;font-size:13px;"><strong id="close-warning-task-title"></strong> still has open subtasks:</p>
+    <ul id="close-warning-list" class="close-warning-list"></ul>
+    <div class="modal-actions" style="justify-content:flex-end;margin-top:16px;">
+      <button type="button" class="btn btn-primary" data-action="close-close-warning">Got it</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="backup-overlay" hidden="">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="backup-title" style="max-width:460px;">
+    <div class="modal-head">
+      <h2 id="backup-title">Backup &amp; restore</h2>
+      <button class="icon-btn" data-action="close-backup" aria-label="Close">✕</button>
+    </div>
+    <div class="backup-section">
+      <h3>Export</h3>
+      <p>Download everything on this board — tasks, subtasks, notes, inbox and drafts — as a .json file.</p>
+      <div class="backup-row">
+        <button type="button" class="btn btn-primary btn-sm" data-action="export-backup">Export backup</button>
+      </div>
+      <div id="backup-export-fallback" hidden="">
+        <p style="margin-bottom:6px;">Downloads aren’t available in this view. Copy the text below and save it as a .json file:</p>
+        <textarea class="backup-paste" id="backup-export-text" readonly=""></textarea>
+      </div>
+    </div>
+    <div class="backup-section">
+      <h3>Import</h3>
+      <p>Restore from a backup file. You’ll see what’s in it before anything changes.</p>
+      <div class="backup-row">
+        <label class="btn btn-ghost btn-sm backup-file-label">Choose file…<input type="file" id="backup-file" accept=".json,application/json"></label>
+        <span class="muted" style="font-size:12.5px;">or paste the backup text:</span>
+      </div>
+      <textarea class="backup-paste" id="backup-paste" placeholder="{ &quot;app&quot;: &quot;route66&quot;, … }"></textarea>
+      <div class="backup-row">
+        <button type="button" class="btn btn-ghost btn-sm" data-action="check-backup-paste">Check pasted text</button>
+      </div>
+      <div class="backup-preview" id="backup-preview" hidden=""></div>
+    </div>
+  </div>
+</div>
+
+<div class="saving-overlay" id="saving-overlay" hidden="" role="alertdialog" aria-modal="true" aria-labelledby="saving-title" aria-describedby="saving-sub" tabindex="-1">
+  <div class="saving-card">
+    <span class="saving-spinner" aria-hidden="true"></span>
+    <div>
+      <p class="saving-title" id="saving-title">Saving your changes…</p>
+      <p class="saving-sub" id="saving-sub">The board reloads with the update in a moment.</p>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<div class="action-lock" id="action-lock" aria-hidden="true">
+  <div class="action-lock-pill"><span class="action-lock-spinner"></span>Working…</div>
+</div>
+
+<script id="app-script">
+(function(){
+  "use strict";
+
+  var SELF_SCRIPT_EL = document.currentScript;
+  // Opened as a plain file (outside Claude) there is no runtime: nothing can
+  // be saved, so fall back to a no-op and tell the viewer.
+  var HAS_RUNTIME = !!(window.claude && typeof window.claude.use === 'function');
+  var claude = HAS_RUNTIME ? window.claude : { use: function(){ return Promise.resolve(null); } };
+  // The page republishes itself, so it must rebuild its OWN source — never
+  // copy document.head: the viewer injects its runtime there on every load,
+  // and copying it forward is what grew this board to 3 MB (133 stacked
+  // copies), making every save and reload slow. The skeleton below is the
+  // exact shape the platform wraps pages in, so it is replaced, not nested.
+  var DOC_SKELETON_OPEN = '<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>';
+  var DOC_SKELETON_CLOSE = '</body></html>';
+  var BODY_SHELL = (function(){
+    var clone = document.body.cloneNode(true);
+    // Keep only the page's own markup: drop every script (ours is re-added
+    // with fresh state) and any comment nodes the host may have added.
+    Array.prototype.forEach.call(clone.querySelectorAll('script'), function(el){ el.remove(); });
+    var walker = document.createTreeWalker(clone, NodeFilter.SHOW_COMMENT);
+    var comments = [];
+    while(walker.nextNode()) comments.push(walker.currentNode);
+    comments.forEach(function(c){ c.remove(); });
+    return clone.innerHTML.replace(/\n{3,}/g, '\n\n').trim();
+  })();
+
+  /*STATE_START*/
+  var state = {"userName":"","inbox":[],"today":[],"drafts":[]};
+  /*STATE_END*/
+
+  var currentFilter = "all";
+  var expandedIds = new Set();
+  var mcpNS = null;
+  var lastSearchResults = [];
+  var readOnly = false;
+  var currentDraftId = null;
+  var persistTimer = null;
+
+  function loadExpandedIds(){
+    try{
+      var raw = localStorage.getItem('route66_expanded');
+      if(raw) JSON.parse(raw).forEach(function(id){ expandedIds.add(id); });
+    }catch(e){ /* storage unavailable — start collapsed, harmless */ }
+  }
+  function saveExpandedIds(){
+    try{ localStorage.setItem('route66_expanded', JSON.stringify(Array.from(expandedIds))); }catch(e){ /* ignore */ }
+  }
+
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,8); }
+  function esc(str){ return String(str==null?'':str).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+  function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+  function priorityIcon(p){ return {high:'▲',medium:'◆',low:'▽'}[p] || '◆'; }
+  var ICON_CALENDAR = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><rect x="1.5" y="2.8" width="13" height="11.7" rx="1.6"/><path d="M1.5 6.2h13"/><path d="M4.4 1.3v2.4M11.6 1.3v2.4"/></svg>';
+  var ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M2.5 4.2h11"/><path d="M6 4.2V2.6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v1.6"/><path d="M4.4 4.2 5 13.4a1.2 1.2 0 0 0 1.2 1.1h3.6A1.2 1.2 0 0 0 11 13.4l.6-9.2"/><path d="M6.6 7v4.6M9.4 7v4.6"/></svg>';
+  var ICON_NOTE = '<svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M3 2.3h7.2L13 5.1V13a.7.7 0 0 1-.7.7H3a.7.7 0 0 1-.7-.7V3a.7.7 0 0 1 .7-.7Z"/><path d="M10.2 2.3V5.1H13"/><path d="M4.8 8.2h6.4M4.8 10.6h4.4"/></svg>';
+  var ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M10.6 2.4a1.4 1.4 0 0 1 2 2L5.4 11.6l-2.8.8.8-2.8Z"/><path d="M9.4 3.6 12.4 6.6"/></svg>';
+  var ICON_CHEVRON = '<svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6l4 4 4-4"/></svg>';
+
+  var THEME_ICONS = {
+    system: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="1.5" y="2.5" width="13" height="9" rx="1.3"/><path d="M5.5 14h5M8 11.5V14"/></svg>',
+    light: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.6M8 13.4V15M1 8h1.6M13.4 8H15M3.05 3.05l1.13 1.13M11.82 11.82l1.13 1.13M3.05 12.95l1.13-1.13M11.82 4.18l1.13-1.13"/></svg>',
+    dark: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M13.5 9.3A6 6 0 1 1 6.7 2.5a5 5 0 0 0 6.8 6.8Z"/></svg>'
+  };
+  var THEME_LABELS = { system: 'System', light: 'Light', dark: 'Dark' };
+  var THEME_ORDER = ['system', 'light', 'dark'];
+
+  function loadTheme(){
+    try{ var v = localStorage.getItem('route66_theme'); return (v === 'light' || v === 'dark') ? v : 'system'; }
+    catch(e){ return 'system'; }
+  }
+  function saveTheme(mode){
+    try{ localStorage.setItem('route66_theme', mode); }catch(e){ /* storage unavailable — theme just won't persist */ }
+  }
+  function applyTheme(mode){
+    if(mode === 'light' || mode === 'dark') document.documentElement.setAttribute('data-theme', mode);
+    else document.documentElement.removeAttribute('data-theme');
+    var btn = document.getElementById('btn-theme-toggle');
+    if(btn){
+      btn.innerHTML = THEME_ICONS[mode];
+      var label = 'Theme: ' + THEME_LABELS[mode] + ' — click to change';
+      btn.setAttribute('aria-label', label);
+      btn.title = label;
+    }
+  }
+  function cycleTheme(){
+    var next = THEME_ORDER[(THEME_ORDER.indexOf(loadTheme()) + 1) % THEME_ORDER.length];
+    saveTheme(next);
+    applyTheme(next);
+  }
+  var ICON_CHECK = '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;"><path d="M3 8.4l3.2 3.2L13 4.8"/></svg>';
+
+  function isTaskDone(t){ return t.subtasks.length ? t.subtasks.every(function(s){return s.done;}) : !!t.done; }
+  function todayMidnight(){ var d = new Date(); d.setHours(0,0,0,0); return d; }
+  function startDateMidnight(t){
+    if(!t.startDate) return null;
+    var d = new Date(t.startDate+'T00:00:00');
+    if(isNaN(d.getTime())) return null;
+    d.setHours(0,0,0,0);
+    return d;
+  }
+  // A task with a future start date sits out of the active board (and out of
+  // the readiness/attention math) until that day arrives -- it only shows up
+  // ahead of time on the roadmap strip.
+  function isUpcoming(t){
+    var sd = startDateMidnight(t);
+    return !!sd && sd.getTime() > todayMidnight().getTime();
+  }
+  function formatStartDate(iso){
+    var d = startDateMidnight({startDate: iso});
+    if(!d) return null;
+    return d.toLocaleDateString(undefined, { month:'short', day:'numeric' });
+  }
+  function readiness(t){
+    if(!t.subtasks.length) return t.done ? 100 : 0;
+    var done = t.subtasks.filter(function(s){return s.done;}).length;
+    return Math.round(done / t.subtasks.length * 100);
+  }
+  function urgencyOf(t){
+    if(isTaskDone(t)) return 'done';
+    if(!t.deadline) return 'none';
+    var ms = new Date(t.deadline).getTime() - Date.now();
+    if(ms < 0) return 'critical';
+    if(ms < 4*3600*1000) return 'critical';
+    if(ms < 24*3600*1000) return 'warning';
+    return 'ok';
+  }
+  function formatCountdown(t){
+    if(!t.deadline) return 'No deadline';
+    var ms = new Date(t.deadline).getTime() - Date.now();
+    var abs = Math.abs(ms);
+    var mins = Math.round(abs/60000);
+    var d = Math.floor(mins/1440), h = Math.floor((mins%1440)/60), m = mins%60;
+    var parts = [];
+    if(d) parts.push(d+'d');
+    if(h) parts.push(h+'h');
+    if(!d && m) parts.push(m+'m');
+    var label = parts.length ? parts.join(' ') : '<1m';
+    return ms < 0 ? ('Overdue by '+label) : (label+' left');
+  }
+  function formatClosedDate(iso){
+    if(!iso) return null;
+    var d = new Date(iso);
+    if(isNaN(d.getTime())) return null;
+    return d.toLocaleDateString(undefined, { month:'short', day:'numeric', year:'numeric' });
+  }
+  function sortByUrgencyThenDeadline(a,b){
+    var rank = {critical:0, warning:1, ok:2, none:3};
+    var ua = urgencyOf(a), ub = urgencyOf(b);
+    if(rank[ua] !== rank[ub]) return rank[ua]-rank[ub];
+    if(!a.deadline && !b.deadline) return 0;
+    if(!a.deadline) return 1;
+    if(!b.deadline) return -1;
+    return new Date(a.deadline) - new Date(b.deadline);
+  }
+  function allKnownUrls(){
+    var urls = new Set();
+    state.inbox.forEach(function(i){ if(i.url) urls.add(i.url); });
+    state.today.forEach(function(t){ if(t.source && t.source.url) urls.add(t.source.url); });
+    return urls;
+  }
+
+  function ring(percent, size, strokeWidth, done){
+    size = size||40; strokeWidth = strokeWidth||4;
+    var r = (size-strokeWidth)/2, c = 2*Math.PI*r;
+    var offset = c - (percent/100)*c;
+    var cls = done ? 'ring-done' : 'ring-progress';
+    return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 '+size+' '+size+'" aria-hidden="true">' +
+      '<circle class="ring-track" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" stroke-width="'+strokeWidth+'" fill="none"/>' +
+      '<circle class="'+cls+'" cx="'+(size/2)+'" cy="'+(size/2)+'" r="'+r+'" stroke-width="'+strokeWidth+'" fill="none" stroke-dasharray="'+c+'" stroke-dashoffset="'+offset+'" transform="rotate(-90 '+(size/2)+' '+(size/2)+')"/>' +
+      '<text x="50%" y="52%" text-anchor="middle" dominant-baseline="middle" class="ring-label">'+(done?'✓':percent+'%')+'</text>' +
+      '</svg>';
+  }
+
+  function sourceBadge(source){
+    if(!source || !source.type || source.type==='manual'){
+      return (source && source.url) ? ('<a class="source-badge" href="'+esc(source.url)+'" target="_blank" rel="noopener">🔗 Link</a>') : '';
+    }
+    var label = source.type==='notion' ? 'Notion' : source.type==='slack' ? 'Slack' : cap(source.type);
+    return source.url
+      ? ('<a class="source-badge" href="'+esc(source.url)+'" target="_blank" rel="noopener">'+label+'</a>')
+      : ('<span class="source-badge">'+label+'</span>');
+  }
+
+  function inlineAddSubtaskRow(taskId){
+    return '<div class="inline-add-subtask"><input type="text" class="inline-subtask-input" data-task-id="'+taskId+'" placeholder="+ Add subtask and press Enter" /></div>';
+  }
+
+  function subtasksBlock(t, expanded){
+    var doneCount = t.subtasks.filter(function(s){return s.done;}).length;
+    var html = '<div class="subtasks">' +
+      '<button type="button" class="link-btn expand-toggle" data-action="toggle-expand" data-id="'+t.id+'">'+
+      (expanded?'Hide':'Show')+' '+t.subtasks.length+' subtask'+(t.subtasks.length===1?'':'s')+' ('+doneCount+'/'+t.subtasks.length+')</button>';
+    if(expanded){
+      html += '<ul class="subtask-list">' + t.subtasks.map(function(s){
+        return '<li><label class="subtask-item '+(s.done?'done':'')+'">'+
+          '<input type="checkbox" data-action="toggle-subtask" data-task-id="'+t.id+'" data-sub-id="'+s.id+'" '+(s.done?'checked':'')+' />'+
+          '<span>'+esc(s.title)+'</span></label>'+
+          '<button type="button" class="icon-btn sm" data-action="remove-subtask" data-task-id="'+t.id+'" data-sub-id="'+s.id+'" aria-label="Remove subtask">✕</button></li>';
+      }).join('') + '</ul>';
+      html += inlineAddSubtaskRow(t.id);
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function taskCard(t){
+    var done = isTaskDone(t);
+    var pct = readiness(t);
+    var urgency = urgencyOf(t);
+    var hasSub = t.subtasks.length > 0;
+    var expanded = expandedIds.has(t.id);
+    var ringAction = hasSub
+      ? ('data-action="toggle-expand" data-id="'+t.id+'"')
+      : ('data-action="toggle-task-done" data-id="'+t.id+'"');
+    return '<article class="task-card '+(urgency==='critical'?'is-critical':'')+' '+(urgency==='warning'?'is-warning':'')+' '+(done?'is-done':'')+'" id="task-'+t.id+'">' +
+      '<button type="button" class="ring-btn" '+ringAction+' aria-label="'+(hasSub?'Toggle subtasks':'Toggle complete')+'">'+ring(pct,40,4,done)+'</button>' +
+      '<div class="task-main">' +
+        '<div class="task-top">' +
+          '<h3 class="task-title">'+esc(t.title)+'</h3>' +
+          '<div class="task-icons">' +
+            '<button type="button" class="icon-btn complete-btn" data-action="complete-task" data-id="'+t.id+'" aria-label="Mark complete">'+ICON_CHECK+'</button>' +
+            '<button type="button" class="icon-btn" data-action="quick-reschedule" data-id="'+t.id+'" aria-label="Reschedule">'+ICON_CALENDAR+'</button>' +
+            '<button type="button" class="icon-btn" data-action="edit-task" data-id="'+t.id+'" aria-label="Edit">'+ICON_EDIT+'</button>' +
+            '<button type="button" class="icon-btn" data-action="delete-task" data-id="'+t.id+'" aria-label="Delete">'+ICON_TRASH+'</button>' +
+          '</div>' +
+        '</div>' +
+        '<div class="task-meta">' +
+          '<span class="priority-marker">'+priorityIcon(t.priority)+' '+cap(t.priority)+'</span>' +
+          sourceBadge(t.source) +
+          (isUpcoming(t) ? ('<span class="starts-badge">Starts '+formatStartDate(t.startDate)+'</span>') : '') +
+          '<button type="button" class="deadline-chip state-'+(done?'done':urgency)+'" data-action="quick-reschedule" data-id="'+t.id+'" style="border:none;cursor:pointer;">'+formatCountdown(t)+'</button>' +
+        '</div>' +
+        (hasSub ? subtasksBlock(t, expanded) : inlineAddSubtaskRow(t.id)) +
+        '<div class="task-notes"><span class="notes-icon">'+ICON_NOTE+'</span><textarea class="notes-input" data-task-id="'+t.id+'" placeholder="Add notes…" rows="1">'+esc(t.notes||'')+'</textarea></div>' +
+      '</div>' +
+    '</article>';
+  }
+
+  function renderGreeting(){
+    var h = new Date().getHours();
+    var g = h < 5 ? 'Working late' : h < 12 ? 'Good morning' : h < 18 ? 'Good afternoon' : 'Good evening';
+    document.getElementById('greeting-text').textContent = g + (state.userName ? ', ' + state.userName : '');
+    document.getElementById('date-text').textContent = new Date().toLocaleDateString(undefined, { weekday:'long', month:'long', day:'numeric' });
+  }
+  function editName(){
+    var h1 = document.getElementById('greeting-text');
+    var input = document.getElementById('greeting-name-input');
+    input.value = state.userName || '';
+    h1.hidden = true;
+    input.hidden = false;
+    input.focus(); input.select();
+  }
+  function commitName(){
+    var input = document.getElementById('greeting-name-input');
+    if(input.hidden) return;
+    state.userName = input.value.trim();
+    input.hidden = true;
+    document.getElementById('greeting-text').hidden = false;
+    persist();
+    renderGreeting();
+  }
+
+  function renderStats(){
+    var active = state.today.filter(function(t){ return !isTaskDone(t) && !isUpcoming(t); });
+    var now = new Date();
+    var dueToday = active.filter(function(t){
+      if(!t.deadline) return false;
+      var d = new Date(t.deadline);
+      return d.getFullYear()===now.getFullYear() && d.getMonth()===now.getMonth() && d.getDate()===now.getDate();
+    }).length;
+    var atRisk = active.filter(function(t){ var u = urgencyOf(t); return u==='critical'||u==='warning'; }).length;
+    var avgReady = active.length ? Math.round(active.reduce(function(s,t){ return s+readiness(t); },0)/active.length) : 0;
+    document.getElementById('stats').innerHTML =
+      '<div class="stat-tile"><span class="stat-value">'+active.length+'</span><span class="stat-label">Active tasks</span></div>' +
+      '<div class="stat-tile"><span class="stat-value">'+dueToday+'</span><span class="stat-label">Due today</span></div>' +
+      '<div class="stat-tile '+(atRisk>0?'stat-warning':'')+'"><span class="stat-value">'+atRisk+'</span><span class="stat-label">At risk</span></div>' +
+      '<div class="stat-tile"><span class="stat-value">'+avgReady+'%</span><span class="stat-label">Avg. readiness</span></div>';
+  }
+
+  function renderAttentionBanner(){
+    var banner = document.getElementById('attention-banner');
+    var critical = state.today.filter(function(t){ return !isTaskDone(t) && !isUpcoming(t) && urgencyOf(t)==='critical'; });
+    if(!critical.length){ banner.hidden = true; banner.innerHTML=''; return; }
+    banner.hidden = false;
+    banner.innerHTML = '<strong>⚠ Needs attention — </strong>' + critical.map(function(t){
+      return '<a href="#task-'+t.id+'">'+esc(t.title)+' ('+formatCountdown(t)+')</a>';
+    }).join(', ');
+  }
+
+  function renderRoadmap(){
+    var track = document.getElementById('roadmap-track');
+    var base = new Date(); base.setHours(0,0,0,0);
+    var active = state.today.filter(function(t){ return !isTaskDone(t) && t.deadline; });
+    var html = '';
+    for(var i=0;i<14;i++){
+      var day = new Date(base.getTime() + i*86400000);
+      var dayTasks = active.filter(function(t){
+        var d = new Date(t.deadline); d.setHours(0,0,0,0);
+        var sd = startDateMidnight(t);
+        if(sd && day.getTime() < sd.getTime()) return false; // scheduled to start later — not on this day's strip yet
+        return day.getTime() <= d.getTime();
+      }).sort(sortByUrgencyThenDeadline);
+      var label = i===0 ? 'Today' : day.toLocaleDateString(undefined,{weekday:'short'});
+      var dateLabel = day.toLocaleDateString(undefined,{month:'short', day:'numeric'});
+      var chips = dayTasks.slice(0,3).map(function(t){
+        var d = new Date(t.deadline); d.setHours(0,0,0,0);
+        var sd = startDateMidnight(t);
+        var isDue = d.getTime() === day.getTime();
+        var isStart = sd && sd.getTime() === day.getTime();
+        var title = isDue ? ' — due this day' : isStart ? ' — starts this day' : ' — in progress';
+        return '<button type="button" class="roadmap-chip state-'+urgencyOf(t)+(isDue?' is-due':'')+'" data-action="roadmap-jump" data-id="'+t.id+'" title="'+esc(t.title)+title+'">'+esc(t.title)+'</button>';
+      }).join('');
+      var more = dayTasks.length>3 ? '<span class="roadmap-more">+'+(dayTasks.length-3)+' more</span>' : '';
+      html += '<div class="roadmap-day'+(i===0?' is-today':'')+'">' +
+        '<span class="roadmap-day-label">'+label+'</span>' +
+        '<span class="roadmap-day-date">'+dateLabel+'</span>' +
+        (dayTasks.length ? chips+more : '<span class="roadmap-empty">—</span>') +
+      '</div>';
+    }
+    track.innerHTML = html;
+  }
+  function scrollToTask(id){
+    var el = document.getElementById('task-'+id);
+    if(!el) return;
+    var reduced = false;
+    try{ reduced = matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+    el.scrollIntoView({ behavior: reduced ? 'auto' : 'smooth', block:'center' });
+    el.classList.add('flash');
+    setTimeout(function(){ el.classList.remove('flash'); }, 1200);
+  }
+
+  function isSameCalendarDay(iso){
+    var d = new Date(iso), n = new Date();
+    return d.getFullYear()===n.getFullYear() && d.getMonth()===n.getMonth() && d.getDate()===n.getDate();
+  }
+  function showLastDayPopup(tasks){
+    document.getElementById('lastday-list').innerHTML = '<ul class="lastday-items">' + tasks.map(function(t){
+      return '<li><a href="#task-'+t.id+'" data-action="close-lastday" class="lastday-link">'+esc(t.title)+'</a>'+
+        '<span class="deadline-chip state-'+urgencyOf(t)+'">'+formatCountdown(t)+'</span></li>';
+    }).join('') + '</ul>';
+    document.getElementById('lastday-overlay').hidden = false;
+  }
+  function checkLastDayPopup(){
+    var tasks = state.today.filter(function(t){
+      return !isTaskDone(t) && !isUpcoming(t) && t.deadline && (urgencyOf(t)==='critical' || isSameCalendarDay(t.deadline));
+    });
+    if(!tasks.length) return;
+    var already = false;
+    try{ already = sessionStorage.getItem('runway_lastday_shown') === '1'; }catch(e){}
+    if(already) return;
+    try{ sessionStorage.setItem('runway_lastday_shown', '1'); }catch(e){}
+    showLastDayPopup(tasks);
+  }
+
+  function applyFilter(){
+    document.querySelectorAll('.priority-group').forEach(function(sec){
+      sec.hidden = currentFilter!=='all' && sec.dataset.priority!==currentFilter;
+    });
+  }
+
+  function renderToday(){
+    var order = ['high','medium','low'];
+    var labels = {high:'High priority', medium:'Medium priority', low:'Low priority'};
+    var active = state.today.filter(function(t){ return !isTaskDone(t) && !isUpcoming(t); });
+    var html = '';
+    if(!state.today.length){
+      html += '<div class="empty-state"><p><strong>Nothing on today’s board yet.</strong></p><p class="muted">Promote something from the inbox, or add a task to get started.</p></div>';
+    }
+    order.forEach(function(p){
+      var items = active.filter(function(t){ return t.priority===p; }).sort(sortByUrgencyThenDeadline);
+      html += '<section class="priority-group" data-priority="'+p+'">' +
+        '<div class="priority-group-head"><h2>'+labels[p]+'</h2><span class="muted">'+items.length+'</span></div>' +
+        (items.length ? items.map(taskCard).join('') : '<p class="empty-hint">Nothing here.</p>') +
+      '</section>';
+    });
+    document.getElementById('today-list').innerHTML = html;
+    applyFilter();
+  }
+
+  function renderUpcoming(){
+    var upcoming = state.today.filter(function(t){ return !isTaskDone(t) && isUpcoming(t); })
+      .sort(function(a,b){ return startDateMidnight(a) - startDateMidnight(b); });
+    var box = document.getElementById('upcoming-list');
+    if(!upcoming.length){ box.innerHTML=''; return; }
+    var existing = box.querySelector('details.upcoming-panel');
+    var wasOpen = existing ? existing.open : true;
+    box.innerHTML = '<details class="upcoming-panel"'+(wasOpen?' open':'')+'><summary>Upcoming ('+upcoming.length+') — not yet on your active board</summary>' +
+      '<div class="upcoming-items">' + upcoming.map(taskCard).join('') + '</div>' +
+    '</details>';
+  }
+
+  function completedDetailBlock(t){
+    var html = '<div class="completed-detail">';
+    if(t.subtasks.length){
+      html += '<ul class="subtask-list">' + t.subtasks.map(function(s){
+        return '<li><label class="subtask-item '+(s.done?'done':'')+'">'+
+          '<input type="checkbox" disabled '+(s.done?'checked':'')+' />'+
+          '<span>'+esc(s.title)+'</span></label></li>';
+      }).join('') + '</ul>';
+    }
+    if(t.notes && t.notes.trim()){
+      html += '<div class="completed-notes"><span class="notes-icon">'+ICON_NOTE+'</span><p>'+esc(t.notes)+'</p></div>';
+    }
+    if(!t.subtasks.length && !(t.notes && t.notes.trim())){
+      html += '<p class="empty-hint">No subtasks or notes.</p>';
+    }
+    html += '</div>';
+    return html;
+  }
+
+  function renderCompleted(){
+    var done = state.today.filter(isTaskDone);
+    var box = document.getElementById('completed-list');
+    if(!done.length){ box.innerHTML=''; return; }
+    var existing = box.querySelector('details.completed-panel');
+    var wasOpen = existing ? existing.open : false;
+    box.innerHTML = '<details class="completed-panel"'+(wasOpen?' open':'')+'><summary>Completed ('+done.length+')</summary>' +
+      '<ul class="completed-items">' + done.map(function(t){
+        var expanded = expandedIds.has(t.id);
+        var hasDetail = t.subtasks.length>0 || !!(t.notes && t.notes.trim());
+        var expandBtn = hasDetail
+          ? ('<button type="button" class="icon-btn sm completed-expand-btn'+(expanded?' is-expanded':'')+'" data-action="toggle-expand" data-id="'+t.id+'" aria-label="'+(expanded?'Collapse details':'Expand details')+'" aria-expanded="'+(expanded?'true':'false')+'">'+ICON_CHEVRON+'</button>')
+          : '<span class="completed-expand-spacer"></span>';
+        var closedLabel = formatClosedDate(t.closedAt);
+        return '<li>' +
+          '<div class="completed-row">' + expandBtn +
+            '<span class="completed-title">'+esc(t.title)+'</span>'+
+            (closedLabel ? ('<span class="closed-date">Closed on '+closedLabel+'</span>') : '') +
+            sourceBadge(t.source)+
+            '<button type="button" class="icon-btn sm" data-action="reopen-task" data-id="'+t.id+'" aria-label="Reopen">↺</button>'+
+            '<button type="button" class="icon-btn sm" data-action="delete-task" data-id="'+t.id+'" aria-label="Delete">'+ICON_TRASH+'</button>' +
+          '</div>' +
+          (expanded && hasDetail ? completedDetailBlock(t) : '') +
+        '</li>';
+      }).join('') + '</ul></details>';
+  }
+
+  function renderInbox(){
+    document.getElementById('inbox-count').textContent = state.inbox.length ? (state.inbox.length+' item'+(state.inbox.length===1?'':'s')) : '';
+    var clearBtn = document.getElementById('btn-clear-inbox');
+    clearBtn.hidden = !state.inbox.length;
+    clearBtn.dataset.armed = '0';
+    clearBtn.textContent = 'Clear';
+    clearBtn.classList.remove('warn');
+    var box = document.getElementById('inbox-list');
+    if(!state.inbox.length){ box.innerHTML = '<p class="empty-hint">Nothing here. Search Slack or add a link manually.</p>'; return; }
+    box.innerHTML = state.inbox.map(function(i){
+      var iconHtml = '<span class="inbox-icon-glyph">📄</span>';
+      if(i.icon){
+        if(/^https?:/.test(i.icon)) iconHtml = '<img class="inbox-icon" src="'+esc(i.icon)+'" alt="" />';
+        else if(i.icon.length<=4) iconHtml = '<span class="inbox-icon-glyph">'+esc(i.icon)+'</span>';
+      }
+      return '<div class="inbox-item">' +
+        '<div class="inbox-main">'+iconHtml+'<a href="'+esc(i.url||'#')+'" target="_blank" rel="noopener">'+esc(i.title)+'</a></div>' +
+        '<div class="inbox-actions">' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-action="promote-inbox" data-id="'+i.id+'">Add to today →</button>' +
+          '<button type="button" class="icon-btn sm" data-action="dismiss-inbox" data-id="'+i.id+'" aria-label="Dismiss">✕</button>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  function renderDrafts(){
+    var panel = document.getElementById('drafts-panel');
+    if(!state.drafts.length){ panel.hidden = true; document.getElementById('drafts-list').innerHTML=''; return; }
+    panel.hidden = false;
+    document.getElementById('drafts-count').textContent = state.drafts.length+' item'+(state.drafts.length===1?'':'s');
+    document.getElementById('drafts-list').innerHTML = state.drafts.map(function(d){
+      return '<div class="inbox-item">' +
+        '<div class="inbox-main"><span class="inbox-icon-glyph">📝</span><span>'+esc(d.title||'(untitled)')+'</span></div>' +
+        '<div class="inbox-actions">' +
+          '<button type="button" class="btn btn-ghost btn-sm" data-action="resume-draft" data-id="'+d.id+'">Resume →</button>' +
+          '<button type="button" class="icon-btn sm" data-action="discard-draft" data-id="'+d.id+'" aria-label="Discard">✕</button>' +
+        '</div></div>';
+    }).join('');
+  }
+
+  function render(){
+    document.getElementById('app').classList.toggle('read-only', readOnly);
+    renderGreeting();
+    renderStats();
+    renderRoadmap();
+    renderAttentionBanner();
+    renderToday();
+    renderUpcoming();
+    renderCompleted();
+    renderInbox();
+    renderDrafts();
+    sizeNotesTextareas();
+  }
+  function sizeNotesTextareas(){
+    document.querySelectorAll('.notes-input').forEach(function(el){
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    });
+  }
+
+  // ---- mutations ----
+  function markClosedIfNeeded(t){
+    if(!t) return;
+    if(isTaskDone(t)){
+      if(!t.closedAt) t.closedAt = new Date().toISOString();
+    } else if(t.closedAt){
+      t.closedAt = null;
+    }
+  }
+  function toggleSubtask(taskId, subId){
+    var t = state.today.find(function(x){return x.id===taskId;});
+    if(!t) return;
+    var s = t.subtasks.find(function(x){return x.id===subId;});
+    if(!s) return;
+    s.done = !s.done;
+    markClosedIfNeeded(t);
+    render(); schedulePersist();
+  }
+  function removeSubtask(taskId, subId){
+    var t = state.today.find(function(x){return x.id===taskId;});
+    if(!t) return;
+    t.subtasks = t.subtasks.filter(function(x){return x.id!==subId;});
+    markClosedIfNeeded(t);
+    render(); schedulePersist();
+  }
+  function attemptCloseTask(id){
+    var t = state.today.find(function(x){return x.id===id;});
+    if(!t) return;
+    var open = t.subtasks.filter(function(s){ return !s.done; });
+    if(open.length){
+      showCloseWarning(t, open);
+      return;
+    }
+    if(!t.subtasks.length) t.done = true;
+    markClosedIfNeeded(t);
+    render(); schedulePersist();
+  }
+  function showCloseWarning(t, openSubtasks){
+    document.getElementById('close-warning-task-title').textContent = t.title;
+    document.getElementById('close-warning-list').innerHTML = openSubtasks.map(function(s){
+      return '<li>'+esc(s.title)+'</li>';
+    }).join('');
+    document.getElementById('close-warning-overlay').hidden = false;
+  }
+  function toggleTaskDone(id){
+    var t = state.today.find(function(x){return x.id===id;});
+    if(!t || t.subtasks.length) return;
+    t.done = !t.done;
+    markClosedIfNeeded(t);
+    render(); schedulePersist();
+  }
+  function toggleExpand(id){
+    if(expandedIds.has(id)) expandedIds.delete(id); else expandedIds.add(id);
+    saveExpandedIds();
+    renderToday();
+    renderUpcoming();
+    renderCompleted();
+  }
+  function deleteTask(id){
+    state.today = state.today.filter(function(x){return x.id!==id;});
+    render(); persist();
+  }
+  function reopenTask(id){
+    var t = state.today.find(function(x){return x.id===id;});
+    if(!t) return;
+    if(t.subtasks.length) t.subtasks.forEach(function(s){ s.done=false; });
+    else t.done = false;
+    markClosedIfNeeded(t);
+    render(); persist();
+  }
+  function dismissInbox(id){
+    state.inbox = state.inbox.filter(function(x){return x.id!==id;});
+    render(); persist();
+  }
+  var clearInboxTimer = null;
+  function handleClearInbox(){
+    var btn = document.getElementById('btn-clear-inbox');
+    if(btn.dataset.armed === '1'){
+      clearTimeout(clearInboxTimer);
+      var n = state.inbox.length;
+      state.inbox = [];
+      render(); persist();
+      toast('Inbox cleared — '+n+' item'+(n===1?'':'s')+' removed.');
+    } else {
+      btn.dataset.armed = '1';
+      btn.textContent = 'Confirm clear?';
+      btn.classList.add('warn');
+      clearInboxTimer = setTimeout(function(){
+        if(btn){ btn.dataset.armed = '0'; btn.textContent = 'Clear'; btn.classList.remove('warn'); }
+      }, 3500);
+    }
+  }
+  function promoteInbox(id){
+    var item = state.inbox.find(function(x){return x.id===id;});
+    if(!item) return;
+    openModal(null, { title:item.title, source:{ type: item.source==='slack'?'slack':'manual', url:item.url||null }, fromInboxId:id });
+  }
+  var rescheduleTaskId = null;
+  function openReschedule(id){
+    var t = state.today.find(function(x){return x.id===id;});
+    if(!t) return;
+    rescheduleTaskId = id;
+    document.getElementById('reschedule-input').value = t.deadline ? toLocalInputValue(t.deadline) : '';
+    document.getElementById('reschedule-overlay').hidden = false;
+  }
+  function closeReschedule(){
+    rescheduleTaskId = null;
+    document.getElementById('reschedule-overlay').hidden = true;
+  }
+  function applyReschedule(iso){
+    var t = state.today.find(function(x){return x.id===rescheduleTaskId;});
+    if(!t) return;
+    t.deadline = iso;
+    closeReschedule();
+    render(); persist();
+    toast(iso ? 'Deadline updated.' : 'Deadline cleared.');
+  }
+  function rescheduleFromPreset(preset){
+    var now = new Date(), d;
+    if(preset==='clear'){ applyReschedule(null); return; }
+    if(preset==='today'){ d = new Date(now); d.setHours(18,0,0,0); }
+    else if(preset==='tomorrow'){ d = new Date(now); d.setDate(d.getDate()+1); d.setHours(9,0,0,0); }
+    else if(preset==='3days'){ d = new Date(now.getTime() + 3*86400000); }
+    else if(preset==='1week'){ d = new Date(now.getTime() + 7*86400000); }
+    else return;
+    applyReschedule(d.toISOString());
+  }
+  function discardDraft(id){
+    state.drafts = state.drafts.filter(function(x){return x.id!==id;});
+    render(); persist();
+  }
+  function resumeDraft(id){
+    var d = state.drafts.find(function(x){return x.id===id;});
+    if(!d) return;
+    currentDraftId = d.id;
+    openModal(null, {
+      title: d.title, priority: d.priority, deadline: d.deadline,
+      source: { type: d.sourceType === 'slack' ? 'slack' : 'manual', url: d.sourceUrl },
+      subtasks: d.subtasks, notes: d.notes
+    });
+  }
+  function maybeSaveDraft(){
+    // Only "add task" flows can leave something worth saving — editing an
+    // existing task never touches it, so cancelling an edit loses nothing.
+    if(document.getElementById('f-id').value) return;
+    var title = document.getElementById('f-title').value.trim();
+    var subtaskInputs = Array.prototype.slice.call(document.querySelectorAll('#f-subtasks-list .subtask-row input'));
+    var subtaskTitles = subtaskInputs.map(function(inp){ return inp.value.trim(); }).filter(Boolean);
+    var url = document.getElementById('f-source-url').value.trim();
+    var notes = document.getElementById('f-notes').value.trim();
+    if(!title && !subtaskTitles.length && !url && !notes){ currentDraftId = null; return; }
+    var draft = {
+      id: currentDraftId || uid(),
+      title: title,
+      priority: document.getElementById('f-priority').value,
+      deadline: document.getElementById('f-deadline').value || null,
+      sourceType: document.getElementById('f-source-type').value,
+      sourceUrl: url || null,
+      subtasks: subtaskTitles,
+      notes: notes || ''
+    };
+    var idx = state.drafts.findIndex(function(d){return d.id===draft.id;});
+    if(idx>=0) state.drafts[idx] = draft; else state.drafts.unshift(draft);
+    currentDraftId = null;
+    render(); persist();
+    toast('Saved as a draft — find it in the Drafts panel.');
+  }
+
+  // ---- modal ----
+  function toLocalInputValue(iso){
+    var d = new Date(iso);
+    function pad(n){ return String(n).padStart(2,'0'); }
+    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+'T'+pad(d.getHours())+':'+pad(d.getMinutes());
+  }
+  function addSubtaskFormRow(){
+    var wrap = document.getElementById('f-subtasks-list');
+    var row = document.createElement('div');
+    row.className = 'subtask-row';
+    row.innerHTML = '<input type="text" placeholder="Subtask title" maxlength="140" />' +
+      '<button type="button" class="icon-btn sm" data-action="remove-subtask-row" aria-label="Remove">✕</button>';
+    wrap.appendChild(row);
+  }
+  function openModal(taskId, prefill){
+    var form = document.getElementById('task-form');
+    form.reset();
+    document.getElementById('f-subtasks-list').innerHTML = '';
+    document.getElementById('btn-delete-task').hidden = true;
+    document.getElementById('f-inbox-source-id').value = '';
+    if(taskId){
+      var t = state.today.find(function(x){return x.id===taskId;});
+      if(!t) return;
+      document.getElementById('modal-title').textContent = 'Edit task';
+      document.getElementById('f-id').value = t.id;
+      document.getElementById('f-title').value = t.title;
+      document.getElementById('f-priority').value = t.priority;
+      document.getElementById('f-deadline').value = t.deadline ? toLocalInputValue(t.deadline) : '';
+      document.getElementById('f-start-date').value = t.startDate || '';
+      document.getElementById('f-source-type').value = (t.source && t.source.type === 'slack') ? 'slack' : 'manual';
+      document.getElementById('f-source-url').value = (t.source && t.source.url) || '';
+      document.getElementById('f-notes').value = t.notes || '';
+      document.getElementById('f-subtasks-wrap').hidden = true;
+      document.getElementById('btn-delete-task').hidden = false;
+    } else {
+      document.getElementById('modal-title').textContent = 'Add task';
+      document.getElementById('f-id').value = '';
+      document.getElementById('f-subtasks-wrap').hidden = false;
+      if(prefill && prefill.subtasks && prefill.subtasks.length){
+        prefill.subtasks.forEach(function(txt){
+          addSubtaskFormRow();
+          var rows = document.querySelectorAll('#f-subtasks-list .subtask-row input');
+          rows[rows.length-1].value = txt;
+        });
+      } else {
+        addSubtaskFormRow();
+      }
+      if(prefill){
+        document.getElementById('f-title').value = prefill.title || '';
+        if(prefill.priority) document.getElementById('f-priority').value = prefill.priority;
+        if(prefill.deadline) document.getElementById('f-deadline').value = prefill.deadline;
+        if(prefill.source){
+          document.getElementById('f-source-type').value = prefill.source.type === 'slack' ? 'slack' : 'manual';
+          document.getElementById('f-source-url').value = prefill.source.url || '';
+        }
+        document.getElementById('f-notes').value = prefill.notes || '';
+        document.getElementById('f-inbox-source-id').value = prefill.fromInboxId || '';
+      }
+    }
+    document.getElementById('modal-overlay').hidden = false;
+    document.getElementById('f-title').focus();
+  }
+  function closeModal(){
+    maybeSaveDraft();
+    document.getElementById('modal-overlay').hidden = true;
+  }
+
+  function onSubmitTaskForm(e){
+    e.preventDefault();
+    var id = document.getElementById('f-id').value;
+    var title = document.getElementById('f-title').value.trim();
+    if(!title) return;
+    var priority = document.getElementById('f-priority').value;
+    var deadlineRaw = document.getElementById('f-deadline').value;
+    var deadline = deadlineRaw ? new Date(deadlineRaw).toISOString() : null;
+    var startDateRaw = document.getElementById('f-start-date').value;
+    var startDate = startDateRaw || null;
+    var sourceType = document.getElementById('f-source-type').value;
+    var sourceUrl = document.getElementById('f-source-url').value.trim();
+    var notes = document.getElementById('f-notes').value.trim();
+    if(id){
+      var t = state.today.find(function(x){return x.id===id;});
+      if(t){ t.title=title; t.priority=priority; t.deadline=deadline; t.startDate=startDate; t.source={type:sourceType,url:sourceUrl||null}; t.notes=notes; }
+    } else {
+      var subtaskInputs = Array.prototype.slice.call(document.querySelectorAll('#f-subtasks-list .subtask-row input'));
+      var subtasks = subtaskInputs.map(function(inp){ return inp.value.trim(); }).filter(Boolean).map(function(txt){ return {id:uid(), title:txt, done:false}; });
+      var fromInboxId = document.getElementById('f-inbox-source-id').value;
+      if(fromInboxId) state.inbox = state.inbox.filter(function(x){return x.id!==fromInboxId;});
+      if(currentDraftId){ state.drafts = state.drafts.filter(function(x){return x.id!==currentDraftId;}); currentDraftId = null; }
+      state.today.push({ id:uid(), title:title, priority:priority, deadline:deadline, startDate:startDate, source:{type:sourceType,url:sourceUrl||null}, subtasks:subtasks, notes:notes, done:false });
+    }
+    // Reset the form BEFORE closing — closeModal() saves a draft from whatever
+    // is still in the fields, and the task we just created shouldn't also
+    // become a draft of itself.
+    document.getElementById('task-form').reset();
+    closeModal();
+    render(); persist();
+  }
+
+  // ---- toasts ----
+  function toast(msg, type){
+    var stack = document.getElementById('toast-stack');
+    var el = document.createElement('div');
+    el.className = 'toast ' + (type==='warn' ? 'toast-warn' : '');
+    el.textContent = msg;
+    stack.appendChild(el);
+    setTimeout(function(){ el.remove(); }, 4500);
+  }
+
+  // ---- mcp (Slack) ----
+  function describeMcpError(err, name){
+    name = name || 'Slack';
+    var code = err && err.code;
+    switch(code){
+      case 'needs_reauth': return name+' needs to be reconnected in claude.ai → Settings → Connectors.';
+      case 'server_not_connected': return name+' isn’t connected. Add it in claude.ai → Settings → Connectors.';
+      case 'selection_required': return 'Choose which '+name+' account to use, then try again.';
+      case 'server_unavailable': return name+' is temporarily unavailable — try again in a moment.';
+      case 'blocked_by_policy': return 'Your organization blocks this '+name+' action.';
+      case 'approval_required': return 'This '+name+' action needs approval first.';
+      case 'tool_error': return name+' reported an error' + (err.message ? (': '+err.message) : '.');
+      case 'not_granted': case 'capability_disabled': case 'capability_removed':
+        return 'Live '+name+' search isn’t available in this view.';
+      case 'rate_limited': return 'Slow down a little and try again shortly.';
+      default: return 'Couldn’t reach '+name+' right now. Try again.';
+    }
+  }
+  function parseSlackResults(text){
+    if(!text) return [];
+    var blocks = text.split(/\n(?=###\s*Result\s+\d+\s+of\s+\d+)/);
+    var out = [];
+    blocks.forEach(function(block){
+      if(!/^###\s*Result/.test(block.trim())) return;
+      var channelMatch = block.match(/^Channel:\s*(.+)$/m);
+      var permalinkMatch = block.match(/Permalink:\s*\[link\]\(([^)]+)\)/);
+      var textMatch = block.match(/Text:\s*\n([\s\S]*?)(?:\nContext after:|\n---\s*$|\n---\n|$)/);
+      if(!permalinkMatch) return;
+      var channel = channelMatch ? channelMatch[1].replace(/\s*\(ID:.*?\)/,'').trim() : '';
+      var snippet = textMatch ? textMatch[1] : '';
+      snippet = snippet
+        .replace(/<!here>|<!channel>|<!everyone>/g,'')
+        .replace(/<([^|>]+)\|([^>]+)>/g,'$2')
+        .replace(/<([^>]+)>/g,'$1')
+        .replace(/:[a-z0-9_+\-]+:/g,'')
+        .replace(/\s+/g,' ')
+        .trim();
+      var title = (channel ? channel+': ' : '') + (snippet || 'Slack message');
+      out.push({ url: permalinkMatch[1], title: title.slice(0,140), highlight:null, icon:'💬', source:'slack' });
+    });
+    return out;
+  }
+  // Slack's search tool takes keywords (AND'd words / "quoted phrases") and
+  // search modifiers (from:, in:, after: …) as separate fields.
+  var SLACK_FILTER_RE = /^(in|from|with|creator|has|hasmy|is|before|after|on|during):\S+/i;
+  function slackSearchArgs(q){
+    var tokens = q.match(/"[^"]+"|\S+/g) || [];
+    var keywords = [], filters = [];
+    tokens.forEach(function(tok){ (SLACK_FILTER_RE.test(tok) ? filters : keywords).push(tok); });
+    var args = { keywords: keywords, natural_language_query: q, limit: 8, include_context: false };
+    if(filters.length) args.filters = filters.join(' ');
+    return args;
+  }
+  function searchSlack(){
+    var q = document.getElementById('inbox-search-input').value.trim();
+    if(!q) return;
+    var box = document.getElementById('inbox-search-results');
+    box.innerHTML = '<p class="muted">Searching…</p>';
+    (mcpNS ? Promise.resolve(mcpNS) : claude.use('mcp').catch(function(){return null;})).then(function(ns){
+      mcpNS = ns;
+      if(!mcpNS){ box.innerHTML = '<p class="muted">Live connectors aren’t available in this view.</p>'; return; }
+      mcpNS.callTool('Slack','slack_search_public_and_private', slackSearchArgs(q)).then(function(res){
+        var raw = (res && res.payload && res.payload.results) || '';
+        lastSearchResults = parseSlackResults(raw);
+        box.innerHTML = lastSearchResults.length ? lastSearchResults.map(function(r,i){
+          return '<div class="search-result"><div class="sr-main">' +
+            '<a href="'+esc(r.url)+'" target="_blank" rel="noopener">'+esc(r.title)+'</a>' +
+            '</div><button type="button" class="btn btn-ghost btn-sm" data-action="add-search-result" data-id="'+i+'">+ Inbox</button></div>';
+        }).join('') : '<p class="muted">No results.</p>';
+      }).catch(function(err){
+        box.innerHTML = '<p class="muted">'+esc(describeMcpError(err,'Slack'))+'</p>';
+      });
+    });
+  }
+  function addSearchResultToInbox(index){
+    var r = lastSearchResults[index];
+    if(!r) return;
+    var known = allKnownUrls();
+    if(r.url && known.has(r.url)){ toast('Already in your inbox or board.'); return; }
+    state.inbox.unshift({ id:uid(), title:r.title||'Untitled', url:r.url, icon:r.icon||null, source:r.source||'slack' });
+    render(); persist();
+    toast('Added to inbox.');
+  }
+
+
+  // ---- backup: export / import ----
+  var BACKUP_MAX_BYTES = 5 * 1024 * 1024;
+  var pendingImport = null;
+
+  function pad2(n){ return String(n).padStart(2,'0'); }
+  function backupFilename(){
+    var d = new Date();
+    return 'route66-backup-' + d.getFullYear() + '-' + pad2(d.getMonth()+1) + '-' + pad2(d.getDate()) + '.json';
+  }
+  function openBackup(){
+    pendingImport = null;
+    document.getElementById('backup-file').value = '';
+    document.getElementById('backup-paste').value = '';
+    document.getElementById('backup-preview').hidden = true;
+    document.getElementById('backup-preview').innerHTML = '';
+    document.getElementById('backup-export-fallback').hidden = true;
+    document.getElementById('backup-overlay').hidden = false;
+  }
+  function closeBackup(){
+    pendingImport = null;
+    document.getElementById('backup-overlay').hidden = true;
+  }
+  function backupJson(){
+    return JSON.stringify({ app:'route66', kind:'backup', version:1, exportedAt:new Date().toISOString(), state:state }, null, 2);
+  }
+  function showExportFallback(json){
+    var box = document.getElementById('backup-export-fallback');
+    var ta = document.getElementById('backup-export-text');
+    ta.value = json;
+    box.hidden = false;
+    ta.focus(); ta.select();
+  }
+  function exportBackup(){
+    var json = backupJson();
+    claude.use('downloads').catch(function(){ return null; }).then(function(dl){
+      if(!dl){ showExportFallback(json); return; }
+      dl.save({ filename: backupFilename(), data: json }).then(function(){
+        toast('Backup saved.');
+      }).catch(function(err){
+        var code = err && err.code;
+        if(code === 'declined'){ toast('Backup not saved.'); return; }
+        if(code === 'rate_limited'){ toast('A download prompt is already open.', 'warn'); return; }
+        showExportFallback(json);
+      });
+    });
+  }
+
+  // Imported files are untrusted: rebuild every record field by field so
+  // only known, well-typed data reaches the board.
+  function safeUrl(v){
+    if(typeof v !== 'string' || !v.trim()) return null;
+    try{ var u = new URL(v.trim()); return (u.protocol === 'https:' || u.protocol === 'http:') ? u.href : null; }
+    catch(e){ return null; }
+  }
+  function str(v, max){ return typeof v === 'string' ? v.slice(0, max || 5000) : ''; }
+  function isoOrNull(v){ return (typeof v === 'string' && !isNaN(new Date(v).getTime())) ? v : null; }
+  function isObj(v){ return !!v && typeof v === 'object' && !Array.isArray(v); }
+  function normalizeBackup(raw){
+    var src = isObj(raw) && isObj(raw.state) ? raw.state : raw;
+    if(!isObj(src) || !Array.isArray(src.today)){
+      throw new Error('This doesn’t look like a Route 66 backup — no task list found.');
+    }
+    var seen = new Set();
+    function freshId(v){
+      var id = (typeof v === 'string' && /^[A-Za-z0-9_-]{1,64}$/.test(v) && !seen.has(v)) ? v : uid();
+      seen.add(id); return id;
+    }
+    var priorities = ['high','medium','low'];
+    var today = src.today.filter(isObj).map(function(t){
+      var subs = (Array.isArray(t.subtasks) ? t.subtasks : []).filter(isObj).map(function(x){
+        return { id: freshId(x.id), title: str(x.title, 300) || 'Untitled', done: !!x.done };
+      });
+      var src0 = isObj(t.source) ? t.source : {};
+      var task = {
+        id: freshId(t.id),
+        title: str(t.title, 300) || 'Untitled',
+        priority: priorities.indexOf(t.priority) >= 0 ? t.priority : 'medium',
+        deadline: isoOrNull(t.deadline),
+        startDate: (typeof t.startDate === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(t.startDate)) ? t.startDate : null,
+        source: { type: ['manual','slack','notion'].indexOf(src0.type) >= 0 ? src0.type : 'manual', url: safeUrl(src0.url) },
+        subtasks: subs,
+        notes: str(t.notes, 20000),
+        done: !!t.done,
+        closedAt: isoOrNull(t.closedAt)
+      };
+      return task;
+    });
+    var inbox = (Array.isArray(src.inbox) ? src.inbox : []).filter(isObj).map(function(i){
+      var icon = typeof i.icon === 'string' && (i.icon.length <= 4 || /^https:\/\//.test(i.icon)) ? i.icon.slice(0, 500) : null;
+      return { id: freshId(i.id), title: str(i.title, 300) || 'Untitled', url: safeUrl(i.url), icon: icon,
+        source: ['manual','slack','notion'].indexOf(i.source) >= 0 ? i.source : 'manual' };
+    });
+    var drafts = (Array.isArray(src.drafts) ? src.drafts : []).filter(isObj).map(function(d){
+      return { id: freshId(d.id), title: str(d.title, 300),
+        priority: priorities.indexOf(d.priority) >= 0 ? d.priority : 'medium',
+        deadline: (typeof d.deadline === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(d.deadline)) ? d.deadline.slice(0,16) : null,
+        sourceType: d.sourceType === 'slack' ? 'slack' : 'manual', sourceUrl: safeUrl(d.sourceUrl),
+        subtasks: (Array.isArray(d.subtasks) ? d.subtasks : []).filter(function(x){ return typeof x === 'string'; }).map(function(x){ return x.slice(0,300); }),
+        notes: str(d.notes, 20000) };
+    });
+    return {
+      exportedAt: isObj(raw) ? isoOrNull(raw.exportedAt) : null,
+      state: { userName: str(src.userName, 40), inbox: inbox, today: today, drafts: drafts }
+    };
+  }
+  function plural(n, word){ return n + ' ' + word + (n === 1 ? '' : 's'); }
+  function showImportError(msg){
+    pendingImport = null;
+    var box = document.getElementById('backup-preview');
+    box.className = 'backup-preview is-error';
+    box.textContent = msg;
+    box.hidden = false;
+  }
+  function previewImport(text){
+    var parsed;
+    try{ parsed = JSON.parse(text); }
+    catch(e){ showImportError('That isn’t valid backup text — it couldn’t be read as JSON.'); return; }
+    var result;
+    try{ result = normalizeBackup(parsed); }
+    catch(e){ showImportError(e.message); return; }
+    pendingImport = result.state;
+    var st = result.state;
+    var active = st.today.filter(function(t){ return !isTaskDone(t); }).length;
+    var subCount = st.today.reduce(function(n,t){ return n + t.subtasks.length; }, 0);
+    var when = result.exportedAt ? new Date(result.exportedAt).toLocaleString(undefined, { dateStyle:'medium', timeStyle:'short' }) : null;
+    var box = document.getElementById('backup-preview');
+    box.className = 'backup-preview';
+    box.innerHTML =
+      '<div>' + (when ? ('Backup from <strong>' + esc(when) + '</strong>') : 'Backup ready') + '</div>' +
+      '<div><strong>' + plural(st.today.length, 'task') + '</strong> (' + active + ' open, ' + plural(subCount, 'subtask') + ') · ' +
+        '<strong>' + plural(st.inbox.length, 'inbox item') + '</strong> · <strong>' + plural(st.drafts.length, 'draft') + '</strong></div>' +
+      '<div class="backup-warning">Importing replaces everything on this board (' + plural(state.today.length, 'task') + ' now). Export first if you might want it back.</div>' +
+      '<div class="backup-row"><button type="button" class="btn btn-danger btn-sm" data-action="confirm-import">Replace board with this backup</button>' +
+      '<button type="button" class="btn btn-ghost btn-sm" data-action="cancel-import">Cancel</button></div>';
+    box.hidden = false;
+  }
+  function onBackupFileChosen(input){
+    var file = input.files && input.files[0];
+    if(!file) return;
+    if(file.size > BACKUP_MAX_BYTES){ showImportError('That file is too large to be a Route 66 backup (over 5 MB).'); return; }
+    var reader = new FileReader();
+    reader.onload = function(){ previewImport(String(reader.result || '')); };
+    reader.onerror = function(){ showImportError('That file couldn’t be read. Try again, or paste its text instead.'); };
+    reader.readAsText(file);
+  }
+  function confirmImport(){
+    if(!pendingImport) return;
+    var next = pendingImport;
+    pendingImport = null;
+    state.userName = next.userName || state.userName;
+    state.inbox = next.inbox;
+    state.today = next.today;
+    state.drafts = next.drafts;
+    closeBackup();
+    render();
+    persist();
+  }
+
+  // ---- persist / self-publish ----
+  function buildDocument(newState){
+    var stateJson = JSON.stringify(newState).replace(/<\/script/gi, '<\\/script');
+    var scriptSrc = SELF_SCRIPT_EL.textContent.replace(
+      /\/\*STATE_START\*\/[\s\S]*?\/\*STATE_END\*\//,
+      '/*STATE_START*/\n  var state = ' + stateJson + ';\n  /*STATE_END*/'
+    );
+    return DOC_SKELETON_OPEN + BODY_SHELL +
+      '\n<script id="app-script">' + scriptSrc + '</' + 'script>\n' + DOC_SKELETON_CLOSE;
+  }
+  // Publishing reloads every open view of this board, including this one —
+  // that's how it self-persists, but it means a burst of rapid edits (ticking
+  // off several subtasks in a row) would otherwise reload mid-burst and
+  // collapse the card you're working in. Coalesce rapid mutations into a
+  // single publish after a short quiet period instead of one per click.
+  function schedulePersist(){
+    if(persistTimer) clearTimeout(persistTimer);
+    persistTimer = setTimeout(function(){ persistTimer = null; persist(); }, 800);
+  }
+  function flushPersist(){
+    if(persistTimer){ clearTimeout(persistTimer); persistTimer = null; persist(); }
+  }
+  // ---- saving modal ----
+  var saving = false;
+  var savingFallbackTimer = null;
+  function showSaving(title, sub){
+    var ov = document.getElementById('saving-overlay');
+    document.getElementById('saving-title').textContent = title || 'Saving your changes…';
+    document.getElementById('saving-sub').textContent = sub || 'The board reloads with the update in a moment.';
+    if(saving) return;
+    saving = true;
+    if(document.activeElement && document.activeElement.blur) document.activeElement.blur();
+    ov.hidden = false;
+    void ov.offsetWidth; // let the fade-in start from opacity 0
+    ov.classList.add('is-visible');
+    try{ ov.focus({ preventScroll:true }); }catch(e){}
+  }
+  function hideSaving(){
+    if(savingFallbackTimer){ clearTimeout(savingFallbackTimer); savingFallbackTimer = null; }
+    saving = false;
+    var ov = document.getElementById('saving-overlay');
+    ov.classList.remove('is-visible');
+    ov.hidden = true;
+  }
+  // A successful publish reloads this view, which removes the modal on its
+  // own. If the reload is slow to arrive, don't trap the user behind it.
+  function armSavingFallback(ms, onTimeout){
+    if(savingFallbackTimer) clearTimeout(savingFallbackTimer);
+    savingFallbackTimer = setTimeout(function(){ savingFallbackTimer = null; hideSaving(); if(onTimeout) onTimeout(); }, ms);
+  }
+
+  function persist(){
+    if(persistTimer){ clearTimeout(persistTimer); persistTimer = null; }
+    if(saving) return; // a publish is already in flight; it carries the latest state
+    claude.use('artifact').catch(function(){ return null; }).then(function(artifact){
+      if(!artifact){ return; }
+      showSaving();
+      var html;
+      try{ html = buildDocument(state); }
+      catch(e){ hideSaving(); toast('Couldn’t prepare the save. Your change is kept in this view for now.', 'warn'); return; }
+      artifact.publish(html).then(function(){
+        armSavingFallback(15000, function(){ toast('Saved.'); });
+      }).catch(function(err){
+        var code = err && err.code;
+        if(code === 'conflict'){
+          // Someone else saved first; every open view is already reloading
+          // to their version.
+          showSaving('Loading the latest version…', 'This board was just updated elsewhere, so your last change wasn’t saved.');
+          armSavingFallback(8000);
+          return;
+        }
+        hideSaving();
+        if(code === 'not_writer' || code === 'not_granted' || code === 'not_declared' || code === 'consent_required'){
+          readOnly = true; render(); toast('This board is read-only for you.', 'warn'); return;
+        }
+        if(code === 'rate_limited'){ toast('Saving too fast — try again shortly.', 'warn'); return; }
+        if(code === 'too_large'){ toast('The board is too large to save. Export a backup, then remove some old completed tasks.', 'warn'); return; }
+        toast('Couldn’t save that change. It’s kept in this view for now.', 'warn');
+      });
+    });
+  }
+
+  // ---- interaction guard ----
+  // A handful of actions can reorder or remove cards outright — a task
+  // completing and jumping to the Completed panel, a subtask row
+  // disappearing, an item leaving the inbox. Click again right away (which
+  // is exactly what happens when you're ticking off several subtasks fast)
+  // and that next click can land on whatever slid into the old spot instead
+  // of what you meant to hit — the checkbox appears to "untick" itself.
+  // Show a brief, visible lock after those actions so a fast follow-up
+  // click hits the scrim rather than a shifted element underneath.
+  var ACTION_LOCK_TRIGGERS = new Set([
+    'toggle-task-done', 'complete-task', 'toggle-expand', 'delete-task',
+    'delete-task-from-modal', 'reopen-task', 'remove-subtask', 'promote-inbox',
+    'dismiss-inbox', 'resume-draft', 'discard-draft', 'reschedule-preset',
+    'reschedule-set', 'clear-inbox'
+  ]);
+  var actionLockTimer = null;
+  function beginActionLock(){
+    if(actionLockTimer) clearTimeout(actionLockTimer);
+    document.getElementById('action-lock').classList.add('is-active');
+  }
+  function endActionLockSoon(){
+    // Hold the lock a beat past the action itself — long enough to cover
+    // the reflow, short enough a normal single click never feels delayed.
+    actionLockTimer = setTimeout(function(){
+      document.getElementById('action-lock').classList.remove('is-active');
+      actionLockTimer = null;
+    }, 220);
+  }
+
+  // ---- events ----
+  document.addEventListener('click', function(e){
+    var t = e.target.closest('[data-action]');
+    if(!t) return;
+    var action = t.dataset.action, id = t.dataset.id;
+    var locked = ACTION_LOCK_TRIGGERS.has(action);
+    if(locked) beginActionLock();
+    switch(action){
+      case 'open-add-modal': openModal(); break;
+      case 'close-modal': closeModal(); break;
+      case 'toggle-theme': cycleTheme(); break;
+      case 'search-slack': searchSlack(); break;
+      case 'open-backup': openBackup(); break;
+      case 'close-backup': closeBackup(); break;
+      case 'export-backup': exportBackup(); break;
+      case 'check-backup-paste': {
+        var pasted = document.getElementById('backup-paste').value.trim();
+        if(pasted) previewImport(pasted); else showImportError('Paste the backup text first.');
+        break;
+      }
+      case 'confirm-import': confirmImport(); break;
+      case 'cancel-import':
+        pendingImport = null;
+        document.getElementById('backup-preview').hidden = true;
+        document.getElementById('backup-file').value = '';
+        break;
+      case 'clear-inbox': handleClearInbox(); break;
+      case 'edit-name': editName(); break;
+      case 'toggle-task-done': toggleTaskDone(id); break;
+      case 'complete-task': attemptCloseTask(id); break;
+      case 'close-close-warning': document.getElementById('close-warning-overlay').hidden = true; break;
+      case 'toggle-expand': toggleExpand(id); break;
+      case 'edit-task': openModal(id); break;
+      case 'delete-task': deleteTask(id); break;
+      case 'delete-task-from-modal': deleteTask(document.getElementById('f-id').value); closeModal(); break;
+      case 'reopen-task': reopenTask(id); break;
+      case 'remove-subtask': removeSubtask(t.dataset.taskId, t.dataset.subId); break;
+      case 'promote-inbox': promoteInbox(id); break;
+      case 'dismiss-inbox': dismissInbox(id); break;
+      case 'resume-draft': resumeDraft(id); break;
+      case 'discard-draft': discardDraft(id); break;
+      case 'close-lastday': document.getElementById('lastday-overlay').hidden = true; break;
+      case 'quick-reschedule': openReschedule(id); break;
+      case 'close-reschedule': closeReschedule(); break;
+      case 'reschedule-preset': rescheduleFromPreset(t.dataset.preset); break;
+      case 'reschedule-set': {
+        var rv = document.getElementById('reschedule-input').value;
+        applyReschedule(rv ? new Date(rv).toISOString() : null);
+        break;
+      }
+      case 'roadmap-jump': scrollToTask(id); break;
+      case 'roadmap-scroll': {
+        var track = document.getElementById('roadmap-track');
+        var reducedMotion = false;
+        try{ reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(err){}
+        track.scrollBy({ left: 220*Number(t.dataset.dir), behavior: reducedMotion ? 'auto' : 'smooth' });
+        break;
+      }
+      case 'add-search-result': addSearchResultToInbox(Number(id)); break;
+      case 'add-subtask-row': addSubtaskFormRow(); break;
+      case 'remove-subtask-row': t.closest('.subtask-row').remove(); break;
+      case 'open-manual-inbox': document.getElementById('manual-inbox-form').hidden = false; break;
+      case 'submit-manual-inbox': {
+        var title = document.getElementById('mi-title').value.trim();
+        var url = document.getElementById('mi-url').value.trim();
+        if(title){
+          state.inbox.unshift({ id:uid(), title:title, url:url||null, icon:'💬', source:'manual' });
+          document.getElementById('mi-title').value = '';
+          document.getElementById('mi-url').value = '';
+          document.getElementById('manual-inbox-form').hidden = true;
+          render(); persist();
+        }
+        break;
+      }
+      case 'filter':
+        currentFilter = t.dataset.filter;
+        document.querySelectorAll('.chip').forEach(function(c){ c.classList.toggle('active', c.dataset.filter===currentFilter); });
+        applyFilter();
+        break;
+    }
+    if(locked) endActionLockSoon();
+  });
+  document.addEventListener('change', function(e){
+    if(e.target && e.target.id === 'backup-file'){ onBackupFileChosen(e.target); return; }
+    var t = e.target.closest('[data-action="toggle-subtask"]');
+    if(t){ beginActionLock(); toggleSubtask(t.dataset.taskId, t.dataset.subId); endActionLockSoon(); }
+  });
+  document.addEventListener('input', function(e){
+    if(e.target && e.target.classList && e.target.classList.contains('notes-input')){
+      e.target.style.height = 'auto';
+      e.target.style.height = e.target.scrollHeight + 'px';
+    }
+  });
+  document.addEventListener('blur', function(e){
+    if(e.target && e.target.classList && e.target.classList.contains('notes-input')){
+      var taskId = e.target.dataset.taskId;
+      var t = state.today.find(function(x){return x.id===taskId;});
+      if(t && (t.notes||'') !== e.target.value){ t.notes = e.target.value; schedulePersist(); }
+    }
+    if(e.target && e.target.id === 'greeting-name-input'){ commitName(); }
+  }, true);
+  document.addEventListener('keydown', function(e){
+    if(saving){ e.preventDefault(); e.stopPropagation(); return; }
+    if(e.target && e.target.id === 'greeting-name-input'){
+      if(e.key === 'Enter'){ e.preventDefault(); commitName(); }
+      else if(e.key === 'Escape'){ e.preventDefault(); document.getElementById('greeting-name-input').hidden = true; document.getElementById('greeting-text').hidden = false; }
+    }
+    if(e.key === 'Enter' && e.target.id === 'inbox-search-input'){ e.preventDefault(); searchSlack(); }
+    if(e.key === 'Enter' && e.target.classList && e.target.classList.contains('inline-subtask-input')){
+      e.preventDefault();
+      var taskId = e.target.dataset.taskId;
+      var val = e.target.value.trim();
+      if(val){
+        var task = state.today.find(function(x){return x.id===taskId;});
+        if(task){ task.subtasks.push({id:uid(), title:val, done:false}); markClosedIfNeeded(task); expandedIds.add(taskId); saveExpandedIds(); render(); schedulePersist(); }
+      }
+    }
+    if(e.key === 'Escape'){
+      if(!document.getElementById('close-warning-overlay').hidden){ document.getElementById('close-warning-overlay').hidden = true; }
+      else if(!document.getElementById('lastday-overlay').hidden){ document.getElementById('lastday-overlay').hidden = true; }
+      else if(!document.getElementById('reschedule-overlay').hidden){ closeReschedule(); }
+      else if(!document.getElementById('backup-overlay').hidden){ closeBackup(); }
+      else closeModal();
+    }
+  });
+  document.getElementById('modal-overlay').addEventListener('click', function(e){ if(e.target === this) closeModal(); });
+  document.getElementById('lastday-overlay').addEventListener('click', function(e){ if(e.target === this) this.hidden = true; });
+  document.getElementById('close-warning-overlay').addEventListener('click', function(e){ if(e.target === this) this.hidden = true; });
+  document.getElementById('reschedule-overlay').addEventListener('click', function(e){ if(e.target === this) closeReschedule(); });
+  document.getElementById('backup-overlay').addEventListener('click', function(e){ if(e.target === this) closeBackup(); });
+  document.getElementById('task-form').addEventListener('submit', onSubmitTaskForm);
+
+  // ---- init ----
+  if(!HAS_RUNTIME){
+    var note = document.createElement('div');
+    note.className = 'attention-banner';
+    note.style.cssText = 'background:var(--warning-soft);border-color:var(--warning);color:var(--text);';
+    note.textContent = 'You’re viewing this board outside Claude, so changes aren’t saved. Publish it as a Claude artifact to use it, or use Backup → Export to keep your work.';
+    var appEl = document.getElementById('app');
+    appEl.insertBefore(note, appEl.firstChild);
+  }
+  applyTheme(loadTheme());
+  loadExpandedIds();
+  render();
+  checkLastDayPopup();
+  // Ambient refresh for time-relative bits (countdowns, roadmap). Skip a tick
+  // entirely while the user is actively typing somewhere — rebuilding the
+  // list would tear down and refocus their field mid-keystroke otherwise.
+  setInterval(function(){
+    var ae = document.activeElement;
+    var isEditing = ae && (ae.tagName === 'TEXTAREA' || (ae.tagName === 'INPUT' && (ae.type === 'text' || ae.type === 'datetime-local')));
+    if(isEditing) return;
+    render();
+  }, 60000);
+  window.addEventListener('beforeunload', flushPersist);
+  document.addEventListener('visibilitychange', function(){ if(document.hidden) flushPersist(); });
+  claude.use('mcp').then(function(ns){ mcpNS = ns; }).catch(function(){ mcpNS = null; });
+})();
+</script>
+</body></html>
