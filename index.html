@@ -1,4 +1,4 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M13 1.6 23.4 5v8c0 6.1-4.4 9.9-10.4 11.5C7 22.9 2.6 19.1 2.6 13V5Z' fill='%234C6FA8'/%3E%3Cpath d='M13 6.4v13.4' stroke='%23fff' stroke-width='2.4' stroke-dasharray='2.6 2.8' stroke-linecap='round'/%3E%3C/svg%3E"><body><title>Route 66</title>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 26 26'%3E%3Cpath d='M13 1.6 23.4 5v8c0 6.1-4.4 9.9-10.4 11.5C7 22.9 2.6 19.1 2.6 13V5Z' fill='%234C6FA8'/%3E%3Cpath d='M13 6.4v13.4' stroke='%23fff' stroke-width='2.4' stroke-dasharray='2.6 2.8' stroke-linecap='round'/%3E%3C/svg%3E"></head><body><title>Route 66</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&amp;family=Karla:wght@400;500;600;700&amp;family=Space+Mono:wght@400;700&amp;display=swap">
 <style>
@@ -552,6 +552,22 @@
   var state = {"userName":"","inbox":[],"today":[],"drafts":[]};
   /*STATE_END*/
 
+  // Outside Claude (e.g. GitHub Pages) there is no artifact runtime to save
+  // into, so the board is kept in this browser's localStorage instead —
+  // one copy per browser/device; Backup → Export moves it elsewhere.
+  var LOCAL_KEY = 'route66_board_v1:' + location.pathname;
+  var localStorageOk = true;
+  if(!HAS_RUNTIME){
+    try{
+      var savedLocal = localStorage.getItem(LOCAL_KEY);
+      if(savedLocal) state = normalizeBackup(JSON.parse(savedLocal)).state;
+    }catch(e){
+      // unreadable or blocked storage: start from the board in the page
+      try{ localStorage.setItem(LOCAL_KEY + ':probe', '1'); localStorage.removeItem(LOCAL_KEY + ':probe'); }
+      catch(e2){ localStorageOk = false; }
+    }
+  }
+
   var currentFilter = "all";
   var expandedIds = new Set();
   var mcpNS = null;
@@ -967,7 +983,7 @@
     clearBtn.textContent = 'Clear';
     clearBtn.classList.remove('warn');
     var box = document.getElementById('inbox-list');
-    if(!state.inbox.length){ box.innerHTML = '<p class="empty-hint">Nothing here. Search Slack or add a link manually.</p>'; return; }
+    if(!state.inbox.length){ box.innerHTML = '<p class="empty-hint">' + (HAS_RUNTIME ? 'Nothing here. Search Slack or add a link manually.' : 'Nothing here. Add a link manually.') + '</p>'; return; }
     box.innerHTML = state.inbox.map(function(i){
       var iconHtml = '<span class="inbox-icon-glyph">📄</span>';
       if(i.icon){
@@ -1412,10 +1428,21 @@
     box.hidden = false;
     ta.focus(); ta.select();
   }
+  function downloadViaLink(json){
+    try{
+      var url = URL.createObjectURL(new Blob([json], { type:'application/json' }));
+      var a = document.createElement('a');
+      a.href = url; a.download = backupFilename();
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function(){ URL.revokeObjectURL(url); }, 2000);
+      toast('Backup downloaded.');
+      return true;
+    }catch(e){ return false; }
+  }
   function exportBackup(){
     var json = backupJson();
     claude.use('downloads').catch(function(){ return null; }).then(function(dl){
-      if(!dl){ showExportFallback(json); return; }
+      if(!dl){ if(HAS_RUNTIME || !downloadViaLink(json)) showExportFallback(json); return; }
       dl.save({ filename: backupFilename(), data: json }).then(function(){
         toast('Backup saved.');
       }).catch(function(err){
@@ -1560,6 +1587,16 @@
   function flushPersist(){
     if(persistTimer){ clearTimeout(persistTimer); persistTimer = null; persist(); }
   }
+  function saveToBrowser(){
+    try{
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(state));
+      localStorageOk = true;
+    }catch(e){
+      if(localStorageOk) toast('This browser blocked saving (private mode or storage full). Use Backup → Export to keep your work.', 'warn');
+      localStorageOk = false;
+    }
+  }
+
   // ---- saving modal ----
   var saving = false;
   var savingFallbackTimer = null;
@@ -1591,6 +1628,7 @@
 
   function persist(){
     if(persistTimer){ clearTimeout(persistTimer); persistTimer = null; }
+    if(!HAS_RUNTIME){ saveToBrowser(); return; }
     if(saving) return; // a publish is already in flight; it carries the latest state
     claude.use('artifact').catch(function(){ return null; }).then(function(artifact){
       if(!artifact){ return; }
@@ -1783,12 +1821,19 @@
 
   // ---- init ----
   if(!HAS_RUNTIME){
-    var note = document.createElement('div');
-    note.className = 'attention-banner';
-    note.style.cssText = 'background:var(--warning-soft);border-color:var(--warning);color:var(--text);';
-    note.textContent = 'You’re using this board in local mode. Saving relies on your browser cookies, cleaning them will clean your data.  Use Backup → Export frequently to keep your work safe.';
-    var appEl = document.getElementById('app');
-    appEl.insertBefore(note, appEl.firstChild);
+    // Slack search needs Claude's connectors; hide it here.
+    var searchBox = document.querySelector('.inbox-search');
+    if(searchBox) searchBox.hidden = true;
+    var exportHelp = document.querySelector('#backup-overlay .backup-section p');
+    if(exportHelp) exportHelp.textContent = 'This board saves in this browser only. Export a backup to keep a copy or move it to another browser or device.';
+    if(!localStorageOk){
+      var note = document.createElement('div');
+      note.className = 'attention-banner';
+      note.style.cssText = 'background:var(--warning-soft);border-color:var(--warning);color:var(--text);';
+      note.textContent = 'This browser is blocking storage (private mode?), so changes won’t be kept after you close the page. Use Backup → Export to keep your work.';
+      var appEl = document.getElementById('app');
+      appEl.insertBefore(note, appEl.firstChild);
+    }
   }
   applyTheme(loadTheme());
   loadExpandedIds();
